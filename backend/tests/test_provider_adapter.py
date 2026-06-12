@@ -87,3 +87,75 @@ async def test_malformed_json_response_is_wrapped_as_provider_error(monkeypatch)
 
     with pytest.raises(ProviderError, match="Provider response was not valid JSON"):
         await chat_completion(config, [{"role": "user", "content": "hello"}])
+
+
+@pytest.mark.anyio
+async def test_null_content_is_wrapped_as_provider_error(monkeypatch):
+    config = ProviderConfig(
+        preset=ProviderPreset.openai,
+        base_url="https://api.openai.com/v1",
+        api_key="secret",
+        model="gpt-test",
+        temperature=0.4,
+    )
+
+    class FakeResponse:
+        status_code = 200
+        text = '{"choices":[{"message":{"content":null}}]}'
+
+        def json(self):
+            return {"choices": [{"message": {"content": None}}]}
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def post(self, *args, **kwargs):
+            return FakeResponse()
+
+    monkeypatch.setattr("backend.app.services.provider_adapter.httpx.AsyncClient", FakeClient)
+
+    with pytest.raises(ProviderError, match="Provider response did not contain choices\\[0\\]\\.message\\.content"):
+        await chat_completion(config, [{"role": "user", "content": "hello"}])
+
+
+@pytest.mark.anyio
+async def test_blank_content_is_wrapped_as_provider_error(monkeypatch):
+    config = ProviderConfig(
+        preset=ProviderPreset.openai,
+        base_url="https://api.openai.com/v1",
+        api_key="secret",
+        model="gpt-test",
+        temperature=0.4,
+    )
+
+    class FakeResponse:
+        status_code = 200
+        text = '{"choices":[{"message":{"content":"   "}}]}'
+
+        def json(self):
+            return {"choices": [{"message": {"content": "   "}}]}
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def post(self, *args, **kwargs):
+            return FakeResponse()
+
+    monkeypatch.setattr("backend.app.services.provider_adapter.httpx.AsyncClient", FakeClient)
+
+    with pytest.raises(ProviderError, match="Provider response did not contain choices\\[0\\]\\.message\\.content"):
+        await chat_completion(config, [{"role": "user", "content": "hello"}])

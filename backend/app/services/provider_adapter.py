@@ -42,9 +42,12 @@ async def chat_completion(config: ProviderConfig, messages: list[dict[str, str]]
     except ValueError as exc:
         raise ProviderError(f"Provider response was not valid JSON: {exc}") from exc
     try:
-        return str(data["choices"][0]["message"]["content"]).strip()
+        content = data["choices"][0]["message"]["content"]
     except (KeyError, IndexError, TypeError) as exc:
         raise ProviderError("Provider response did not contain choices[0].message.content") from exc
+    if not isinstance(content, str) or not content.strip():
+        raise ProviderError("Provider response did not contain choices[0].message.content")
+    return content.strip()
 
 
 def _mock_response(config: ProviderConfig, messages: list[dict[str, str]]) -> str:
