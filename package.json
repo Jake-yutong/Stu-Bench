@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "backend:dev": "uvicorn backend.app.main:app --reload --port 8000",
+    "backend:test": "pytest backend/tests -q",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:test": "cd frontend && npm test",
+    "lint:py": "ruff check backend",
+    "test": "pytest backend/tests -q"
+  }
+}
