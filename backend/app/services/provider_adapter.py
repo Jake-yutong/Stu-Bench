@@ -36,7 +36,7 @@ async def chat_completion(config: ProviderConfig, messages: list[dict[str, str]]
     except httpx.HTTPError as exc:
         raise ProviderError(f"Provider request failed: {exc}") from exc
     if response.status_code >= 400:
-        raise ProviderError(f"Provider returned {response.status_code}: {response.text[:500]}")
+        raise ProviderError(f"Provider returned HTTP {response.status_code}")
     try:
         data = response.json()
     except ValueError as exc:

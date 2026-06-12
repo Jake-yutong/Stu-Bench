@@ -54,6 +54,46 @@ async def test_httpx_request_errors_are_wrapped_as_provider_error(monkeypatch):
 
 
 @pytest.mark.anyio
+async def test_non_2xx_response_does_not_expose_body_text(monkeypatch):
+    config = ProviderConfig(
+        preset=ProviderPreset.openai,
+        base_url="https://api.openai.com/v1",
+        api_key="secret",
+        model="gpt-test",
+        temperature=0.4,
+    )
+
+    class FakeResponse:
+        status_code = 403
+        text = "sentinel-secret-body-token"
+
+        def json(self):
+            return {}
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def post(self, *args, **kwargs):
+            return FakeResponse()
+
+    monkeypatch.setattr("backend.app.services.provider_adapter.httpx.AsyncClient", FakeClient)
+
+    with pytest.raises(ProviderError) as exc_info:
+        await chat_completion(config, [{"role": "user", "content": "hello"}])
+
+    message = str(exc_info.value)
+    assert "Provider returned HTTP 403" in message
+    assert "sentinel-secret-body-token" not in message
+
+
+@pytest.mark.anyio
 async def test_malformed_json_response_is_wrapped_as_provider_error(monkeypatch):
     config = ProviderConfig(
         preset=ProviderPreset.openai,
