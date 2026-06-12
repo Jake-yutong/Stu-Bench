@@ -36,31 +36,31 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Lina How are you?"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "I am good thank you... let's take a look at this question :)"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "so, we have 1/4 and 3/4 on the scale but none of the answers are out of 4"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "so, we could start by changing the denominators on the scale"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "to check for A, the denominator is 16"
         },
@@ -72,13 +72,13 @@
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "\ud83c\udf89\ud83d\ude0a"
         },
         {
           "turn_id": "t8",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Super..."
         }
@@ -186,7 +186,7 @@
           {
             "turn_index": 18,
             "speaker": "tutor",
-            "message": " on the scale we have 4/16 and 12/16"
+            "message": "on the scale we have 4/16 and 12/16"
           },
           {
             "turn_index": 19,
@@ -351,7 +351,7 @@
           {
             "turn_index": 51,
             "speaker": "tutor",
-            "message": "ohh you're flying! "
+            "message": "ohh you're flying!"
           },
           {
             "turn_index": 52,
@@ -526,7 +526,7 @@
           {
             "turn_index": 86,
             "speaker": "tutor",
-            "message": "super "
+            "message": "super"
           },
           {
             "turn_index": 87,
@@ -626,7 +626,7 @@
           {
             "turn_index": 106,
             "speaker": "tutor",
-            "message": " we need to check if A B C or D don't fit between 0.25 and 0.625"
+            "message": "we need to check if A B C or D don't fit between 0.25 and 0.625"
           },
           {
             "turn_index": 107,
@@ -641,7 +641,7 @@
           {
             "turn_index": 109,
             "speaker": "tutor",
-            "message": "why do you think B?\n"
+            "message": "why do you think B?"
           },
           {
             "turn_index": 110,
@@ -716,7 +716,7 @@
           {
             "turn_index": 124,
             "speaker": "tutor",
-            "message": "11/16... we can change this to a decimal "
+            "message": "11/16... we can change this to a decimal"
           },
           {
             "turn_index": 125,
@@ -836,7 +836,7 @@
           {
             "turn_index": 148,
             "speaker": "tutor",
-            "message": "I can send you back don't worry "
+            "message": "I can send you back don't worry"
           }
         ],
         "reference_kc_transitions": [],
@@ -883,31 +883,31 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Jared, how can I help?"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Of course!"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "So the rule is y = 3x + 5, which means to find y you do 3 times x then add 5"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "The star is to find y when x is 3"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "So we will do 3 times 3 then add 5"
         },
@@ -919,7 +919,7 @@
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "That's the one!"
         },
@@ -1248,7 +1248,7 @@
           {
             "turn_index": 61,
             "speaker": "tutor",
-            "message": "Can you do -16/3 - 1? "
+            "message": "Can you do -16/3 - 1?"
           },
           {
             "turn_index": 62,
@@ -1670,51 +1670,51 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hello Amira, how can I help?"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "I'm well thank you!"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
-          "message": "I'm inside, which is the right place to be in this weather. "
+          "message": "I'm inside, which is the right place to be in this weather."
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "How are you?"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "A tree fell near you?"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Did it hit anything?"
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
-          "message": "THat's a pain for drivers. "
+          "message": "THat's a pain for drivers."
         },
         {
           "turn_id": "t8",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
-          "message": "Good that it didn't hit anything though. "
+          "message": "Good that it didn't hit anything though."
         }
       ],
       "scs": {
@@ -1750,7 +1750,7 @@
           {
             "turn_index": 4,
             "speaker": "tutor",
-            "message": "I'm inside, which is the right place to be in this weather. "
+            "message": "I'm inside, which is the right place to be in this weather."
           },
           {
             "turn_index": 5,
@@ -1795,17 +1795,17 @@
           {
             "turn_index": 13,
             "speaker": "tutor",
-            "message": "THat's a pain for drivers. "
+            "message": "THat's a pain for drivers."
           },
           {
             "turn_index": 14,
             "speaker": "tutor",
-            "message": "Good that it didn't hit anything though. "
+            "message": "Good that it didn't hit anything though."
           },
           {
             "turn_index": 15,
             "speaker": "tutor",
-            "message": "We lost power for 2 hours. "
+            "message": "We lost power for 2 hours."
           },
           {
             "turn_index": 16,
@@ -1820,7 +1820,7 @@
           {
             "turn_index": 18,
             "speaker": "tutor",
-            "message": "We get asked this a lot but all the tutors are real people. "
+            "message": "We get asked this a lot but all the tutors are real people."
           },
           {
             "turn_index": 19,
@@ -1835,7 +1835,7 @@
           {
             "turn_index": 21,
             "speaker": "tutor",
-            "message": "I'd wonder too, if I were in your shoes. "
+            "message": "I'd wonder too, if I were in your shoes."
           },
           {
             "turn_index": 22,
@@ -1860,7 +1860,7 @@
           {
             "turn_index": 26,
             "speaker": "tutor",
-            "message": "Well, just goes to show you can't trust everything you read on the internet. "
+            "message": "Well, just goes to show you can't trust everything you read on the internet."
           },
           {
             "turn_index": 27,
@@ -1885,7 +1885,7 @@
           {
             "turn_index": 31,
             "speaker": "tutor",
-            "message": "Oh, AI help, I see. "
+            "message": "Oh, AI help, I see."
           },
           {
             "turn_index": 32,
@@ -1895,12 +1895,12 @@
           {
             "turn_index": 33,
             "speaker": "tutor",
-            "message": "Well, it doesn't look like it's always right because it got this one wrong. "
+            "message": "Well, it doesn't look like it's always right because it got this one wrong."
           },
           {
             "turn_index": 34,
             "speaker": "tutor",
-            "message": "AIs make mistakes in maths all the time. I see it a lot in my work. "
+            "message": "AIs make mistakes in maths all the time. I see it a lot in my work."
           },
           {
             "turn_index": 35,
@@ -1920,12 +1920,12 @@
           {
             "turn_index": 38,
             "speaker": "tutor",
-            "message": "We could always talk it through - then if I give you faulty reasoning, you can correct me. "
+            "message": "We could always talk it through - then if I give you faulty reasoning, you can correct me."
           },
           {
             "turn_index": 39,
             "speaker": "tutor",
-            "message": "I'm always willing to learn. "
+            "message": "I'm always willing to learn."
           },
           {
             "turn_index": 40,
@@ -2000,7 +2000,7 @@
           {
             "turn_index": 54,
             "speaker": "tutor",
-            "message": "Spot on. "
+            "message": "Spot on."
           },
           {
             "turn_index": 55,
@@ -2015,7 +2015,7 @@
           {
             "turn_index": 57,
             "speaker": "tutor",
-            "message": "Yes. "
+            "message": "Yes."
           },
           {
             "turn_index": 58,
@@ -2060,12 +2060,12 @@
           {
             "turn_index": 66,
             "speaker": "tutor",
-            "message": "I'm not sure she did. 4 x 20 = 80, so that bit is correct. "
+            "message": "I'm not sure she did. 4 x 20 = 80, so that bit is correct."
           },
           {
             "turn_index": 67,
             "speaker": "tutor",
-            "message": "But the 1 didn't get multiplied by 4. It's still a 1 in her line "
+            "message": "But the 1 didn't get multiplied by 4. It's still a 1 in her line"
           },
           {
             "turn_index": 68,
@@ -2085,7 +2085,7 @@
           {
             "turn_index": 71,
             "speaker": "tutor",
-            "message": "So that's why Emma is wrong (whatever Zane may have said). "
+            "message": "So that's why Emma is wrong (whatever Zane may have said)."
           },
           {
             "turn_index": 72,
@@ -2095,12 +2095,12 @@
           {
             "turn_index": 73,
             "speaker": "tutor",
-            "message": "Well, let's talk about Leo's statement then. "
+            "message": "Well, let's talk about Leo's statement then."
           },
           {
             "turn_index": 74,
             "speaker": "tutor",
-            "message": "That's why I was interested in whether Zane had given any reasons. "
+            "message": "That's why I was interested in whether Zane had given any reasons."
           },
           {
             "turn_index": 75,
@@ -2110,7 +2110,7 @@
           {
             "turn_index": 76,
             "speaker": "tutor",
-            "message": "So Leo says m/4 - 1 = 20 can be turned into m/4 = 21. "
+            "message": "So Leo says m/4 - 1 = 20 can be turned into m/4 = 21."
           },
           {
             "turn_index": 77,
@@ -2130,7 +2130,7 @@
           {
             "turn_index": 80,
             "speaker": "tutor",
-            "message": "We're not far off done "
+            "message": "We're not far off done"
           },
           {
             "turn_index": 81,
@@ -2170,7 +2170,7 @@
           {
             "turn_index": 88,
             "speaker": "tutor",
-            "message": "Hmmm... multiplying is the opposite of dividing, not of subtracting. "
+            "message": "Hmmm... multiplying is the opposite of dividing, not of subtracting."
           },
           {
             "turn_index": 89,
@@ -2190,7 +2190,7 @@
           {
             "turn_index": 92,
             "speaker": "tutor",
-            "message": "So I think Leo added 1 to the left hand side "
+            "message": "So I think Leo added 1 to the left hand side"
           },
           {
             "turn_index": 93,
@@ -2310,7 +2310,7 @@
           {
             "turn_index": 116,
             "speaker": "tutor",
-            "message": "The right hand side went from 20 to 21, so Leo DID remember to add 1. "
+            "message": "The right hand side went from 20 to 21, so Leo DID remember to add 1."
           },
           {
             "turn_index": 117,
@@ -2320,7 +2320,7 @@
           {
             "turn_index": 118,
             "speaker": "tutor",
-            "message": "I didn't think it was wasted. "
+            "message": "I didn't think it was wasted."
           },
           {
             "turn_index": 119,
@@ -2340,7 +2340,7 @@
           {
             "turn_index": 122,
             "speaker": "tutor",
-            "message": "Yes, he correctly added 1 to both sides. "
+            "message": "Yes, he correctly added 1 to both sides."
           },
           {
             "turn_index": 123,
@@ -2417,13 +2417,13 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Leila! How can I help?"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "No problem, let's take a look together"
         },
@@ -2435,25 +2435,25 @@
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "ok. fractions are equivalent if they have the same true value"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "so 4/8 is the same as 2/4 which is the same as 1/2"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "If I simplified all of them I would get 1/2 so they are all equivalent"
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Now take a look at Meg's fractions"
         },
@@ -3027,7 +3027,7 @@
           {
             "turn_index": 110,
             "speaker": "tutor",
-            "message": " we'd get..."
+            "message": "we'd get..."
           },
           {
             "turn_index": 111,
@@ -3154,37 +3154,37 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hello how can I help you?"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "sure, I'll just take a few seconds to read it"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "oh this is another non-replace type question"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "let's think about it together"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "tell me what different results Lila can gt if she takes out 2 balls"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "for example, she could get a red and a red"
         },
@@ -3279,7 +3279,7 @@
           {
             "turn_index": 13,
             "speaker": "tutor",
-            "message": "great! well done. Now another? "
+            "message": "great! well done. Now another?"
           },
           {
             "turn_index": 14,
@@ -3349,7 +3349,7 @@
           {
             "turn_index": 27,
             "speaker": "tutor",
-            "message": "so in this quetsion it means there could be 2 reds "
+            "message": "so in this quetsion it means there could be 2 reds"
           },
           {
             "turn_index": 28,
@@ -3877,7 +3877,7 @@
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Alright, let's have a look at it together."
         },
@@ -3889,13 +3889,13 @@
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "That's great you know about it!"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "If you'd like, don't think of this problem as a fraction.  Instead, think of it as a multiplication and division problem."
         },
@@ -3907,7 +3907,7 @@
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Alright, we can start by estimating or rounding the numbers in our problem to one significant figure."
         },
@@ -4146,7 +4146,7 @@
           {
             "turn_index": 43,
             "speaker": "tutor",
-            "message": "If it helps, you can add a place value to each one "
+            "message": "If it helps, you can add a place value to each one"
           },
           {
             "turn_index": 44,
@@ -4501,7 +4501,7 @@
           {
             "turn_index": 114,
             "speaker": "tutor",
-            "message": "Well done for working through this question - I'll send you back to the lesson to put your answer in. "
+            "message": "Well done for working through this question - I'll send you back to the lesson to put your answer in."
           }
         ],
         "reference_kc_transitions": [],
@@ -4548,49 +4548,49 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hiya \ud83d\ude03"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
-          "message": "n means a number "
+          "message": "n means a number"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "with this one, you need to get 2/3 to 1 by dividing by 2/3. Then you need to divide 1/4 by 2/3 to get n"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "what year are you in Brianna? This might be a bit too tricky at the moment"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "okay, if I were you, if you're unsure about this I would move on to a different quiz as this is quite hard"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "oh yeah, maybe have a go at some work on coordinates?"
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "hmm has it changed since you were on here last?"
         },
         {
           "turn_id": "t8",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "it may be because you are getting through the lessons quickly!"
         }
@@ -4628,7 +4628,7 @@
           {
             "turn_index": 4,
             "speaker": "tutor",
-            "message": "n means a number "
+            "message": "n means a number"
           },
           {
             "turn_index": 5,
@@ -4873,7 +4873,7 @@
           {
             "turn_index": 53,
             "speaker": "tutor",
-            "message": "that's a third as a decimal, so it's not wrong! "
+            "message": "that's a third as a decimal, so it's not wrong!"
           },
           {
             "turn_index": 54,
@@ -5123,7 +5123,7 @@
           {
             "turn_index": 103,
             "speaker": "tutor",
-            "message": "yes it is! "
+            "message": "yes it is!"
           },
           {
             "turn_index": 104,
@@ -5200,25 +5200,25 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Yooooooooooooo"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Let's work each answer out and see which gives us -20 \ud83d\ude00\ud83d\udc4d"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Sorry yo means hi \ud83d\ude05"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Let's start with A then \ud83d\ude00"
         },
@@ -5236,7 +5236,7 @@
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Great work \u2705\u2705\u2705"
         },
@@ -5405,7 +5405,7 @@
           {
             "turn_index": 29,
             "speaker": "tutor",
-            "message": "Right so A isn't correct as that gave us -2, not -20 \ud83d\ude00 "
+            "message": "Right so A isn't correct as that gave us -2, not -20 \ud83d\ude00"
           },
           {
             "turn_index": 30,
@@ -5680,7 +5680,7 @@
           {
             "turn_index": 84,
             "speaker": "tutor",
-            "message": "11 - 31 = ? "
+            "message": "11 - 31 = ?"
           },
           {
             "turn_index": 85,
@@ -5847,49 +5847,49 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hello :)"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Yes absolutely :)"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Have you got a particular question in mind? This lesson was based on line graphs"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Shall we look at this question together first? :)"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
-          "message": "Amelia are you still with me? Our chat is going to de-activate and continue your lesson in a moment, but if you would like to talk about algebra then just send another request through and I'll be right back :) "
+          "message": "Amelia are you still with me? Our chat is going to de-activate and continue your lesson in a moment, but if you would like to talk about algebra then just send another request through and I'll be right back :)"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi amelia :)"
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Yes, is it this question that you're on that you mean? :)"
         },
         {
           "turn_id": "t8",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Or do you mean a whole different topic?"
         }
@@ -5947,7 +5947,7 @@
           {
             "turn_index": 8,
             "speaker": "tutor",
-            "message": "Amelia are you still with me? Our chat is going to de-activate and continue your lesson in a moment, but if you would like to talk about algebra then just send another request through and I'll be right back :) "
+            "message": "Amelia are you still with me? Our chat is going to de-activate and continue your lesson in a moment, but if you would like to talk about algebra then just send another request through and I'll be right back :)"
           },
           {
             "turn_index": 9,
@@ -6007,7 +6007,7 @@
           {
             "turn_index": 20,
             "speaker": "tutor",
-            "message": "Okie doke, are you confident with Collecting like terms? "
+            "message": "Okie doke, are you confident with Collecting like terms?"
           },
           {
             "turn_index": 21,
@@ -6037,7 +6037,7 @@
           {
             "turn_index": 26,
             "speaker": "tutor",
-            "message": "Almost, what about the - d? "
+            "message": "Almost, what about the - d?"
           },
           {
             "turn_index": 27,
@@ -6072,12 +6072,12 @@
           {
             "turn_index": 33,
             "speaker": "tutor",
-            "message": "Ah ok, so 5x means 5 multiplied by x (where x is just a number we don't know yet), "
+            "message": "Ah ok, so 5x means 5 multiplied by x (where x is just a number we don't know yet),"
           },
           {
             "turn_index": 34,
             "speaker": "tutor",
-            "message": "I'll find you a lesson on that kind of stuff :) "
+            "message": "I'll find you a lesson on that kind of stuff :)"
           },
           {
             "turn_index": 35,
@@ -6237,7 +6237,7 @@
           {
             "turn_index": 66,
             "speaker": "tutor",
-            "message": "Not particularly busy, but when I'm not helping students, I'm writing new worksheets and questions or recording the solutions :) "
+            "message": "Not particularly busy, but when I'm not helping students, I'm writing new worksheets and questions or recording the solutions :)"
           },
           {
             "turn_index": 67,
@@ -6287,7 +6287,7 @@
           {
             "turn_index": 76,
             "speaker": "tutor",
-            "message": "Let's look at your question "
+            "message": "Let's look at your question"
           },
           {
             "turn_index": 77,
@@ -6442,7 +6442,7 @@
           {
             "turn_index": 107,
             "speaker": "tutor",
-            "message": "ok - good luck :)\n"
+            "message": "ok - good luck :)"
           },
           {
             "turn_index": 108,
@@ -6494,49 +6494,49 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hey Derek :)"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "How are you?"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Sorry I haven't got back to you on email, I've had a lot going on in our family. Shall we have a look at Lisa's statement first?"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "No worries, so let's have a look at this question and see what we can make of it"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Firstly, the number 340"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "In words, that is three hundred and forty"
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Because 3 is in the hundreds column, and 4 is in the tens column"
         },
         {
           "turn_id": "t8",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "The other number Lisa is looking at is 3040, which we can write in words as three thousand and forty"
         }
@@ -6609,7 +6609,7 @@
           {
             "turn_index": 11,
             "speaker": "tutor",
-            "message": "Do you know which is more out of one thousand or one hundred? :) "
+            "message": "Do you know which is more out of one thousand or one hundred? :)"
           },
           {
             "turn_index": 12,
@@ -6629,7 +6629,7 @@
           {
             "turn_index": 15,
             "speaker": "tutor",
-            "message": "If we're looking at whole, positive numbers, the more digits we have, the bigger it is. So in this case, 3040 is bigger than 340. But also, 1000000 is bigger than 10, for example :) "
+            "message": "If we're looking at whole, positive numbers, the more digits we have, the bigger it is. So in this case, 3040 is bigger than 340. But also, 1000000 is bigger than 10, for example :)"
           },
           {
             "turn_index": 16,
@@ -6759,7 +6759,7 @@
           {
             "turn_index": 41,
             "speaker": "tutor",
-            "message": "Hi Derek. "
+            "message": "Hi Derek."
           },
           {
             "turn_index": 42,
@@ -6869,7 +6869,7 @@
           {
             "turn_index": 63,
             "speaker": "tutor",
-            "message": "Fabulous! "
+            "message": "Fabulous!"
           },
           {
             "turn_index": 64,
@@ -6899,12 +6899,12 @@
           {
             "turn_index": 69,
             "speaker": "tutor",
-            "message": "Or we can separate them out into pairs which sometimes helps too, \u2600\u2600----\u2600\u2600, so we can see there are 2, 4 :) "
+            "message": "Or we can separate them out into pairs which sometimes helps too, \u2600\u2600----\u2600\u2600, so we can see there are 2, 4 :)"
           },
           {
             "turn_index": 70,
             "speaker": "tutor",
-            "message": "Let's try another :) "
+            "message": "Let's try another :)"
           },
           {
             "turn_index": 71,
@@ -6959,7 +6959,7 @@
           {
             "turn_index": 81,
             "speaker": "tutor",
-            "message": "Ok, so we're pretty good at 1-3, it's just above that when we have issues, so we'll keep doing some more of the bigger ones :) "
+            "message": "Ok, so we're pretty good at 1-3, it's just above that when we have issues, so we'll keep doing some more of the bigger ones :)"
           },
           {
             "turn_index": 82,
@@ -6984,7 +6984,7 @@
           {
             "turn_index": 86,
             "speaker": "tutor",
-            "message": "Ooh awesome that;s great! We've just missed the final one off though :) "
+            "message": "Ooh awesome that;s great! We've just missed the final one off though :)"
           },
           {
             "turn_index": 87,
@@ -7009,7 +7009,7 @@
           {
             "turn_index": 91,
             "speaker": "tutor",
-            "message": "Yay! "
+            "message": "Yay!"
           },
           {
             "turn_index": 92,
@@ -7019,7 +7019,7 @@
           {
             "turn_index": 93,
             "speaker": "tutor",
-            "message": "Well done! "
+            "message": "Well done!"
           },
           {
             "turn_index": 94,
@@ -7126,49 +7126,49 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hey! How can I help? \ud83d\ude03"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "That's OK. Bye"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Isabella, how can I be of help? \ud83d\ude04"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "That's okay, I will send you back!"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hey! How can I help? \ud83d\ude03"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "OK bye"
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
-          "message": "Hi Isabella!  Are you accidentally hitting the button?  "
+          "message": "Hi Isabella!  Are you accidentally hitting the button?"
         },
         {
           "turn_id": "t8",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Lila is not on at the moment.  Can I help?"
         }
@@ -7256,7 +7256,7 @@
           {
             "turn_index": 14,
             "speaker": "tutor",
-            "message": "Hi Isabella!  Are you accidentally hitting the button?  "
+            "message": "Hi Isabella!  Are you accidentally hitting the button?"
           },
           {
             "turn_index": 15,
@@ -7496,7 +7496,7 @@
           {
             "turn_index": 62,
             "speaker": "tutor",
-            "message": " I can see Lila gave some help towards this question"
+            "message": "I can see Lila gave some help towards this question"
           },
           {
             "turn_index": 63,
@@ -7743,7 +7743,7 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Aoife \ud83d\ude03\ud83d\udc4b"
         },
@@ -7755,7 +7755,7 @@
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Let's have a look together \ud83d\udc40"
         },
@@ -7763,17 +7763,17 @@
           "turn_id": "t4",
           "type": "<Press for Accuracy>",
           "support_level": 1,
-          "message": "If Emma has 1 litre half full, how much cola does she have? "
+          "message": "If Emma has 1 litre half full, how much cola does she have?"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Brilliant \ud83d\ude03\ud83d\udc4d"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "So now she pours that into a 5 litre tub \ud83d\ude01"
         },
@@ -7833,7 +7833,7 @@
           {
             "turn_index": 6,
             "speaker": "tutor",
-            "message": "If Emma has 1 litre half full, how much cola does she have? "
+            "message": "If Emma has 1 litre half full, how much cola does she have?"
           },
           {
             "turn_index": 7,
@@ -8268,7 +8268,7 @@
           {
             "turn_index": 93,
             "speaker": "tutor",
-            "message": "\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\n"
+            "message": "\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03\ud83d\ude03"
           },
           {
             "turn_index": 94,
@@ -8335,7 +8335,7 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi this is Alex one of the tutors at Eedi"
         },
@@ -8347,13 +8347,13 @@
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "No worries, let me just take a quick look at the question \ud83d\ude0a"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "We need to try and use the information in the diagram to see which of the statements we can show."
         },
@@ -8365,7 +8365,7 @@
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Perfect"
         },
@@ -8377,7 +8377,7 @@
         },
         {
           "turn_id": "t8",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Good, but what do we get when we actually add them up..."
         }
@@ -8630,7 +8630,7 @@
           {
             "turn_index": 47,
             "speaker": "tutor",
-            "message": "(m + 100) + (2m -n) + (260 -2m) "
+            "message": "(m + 100) + (2m -n) + (260 -2m)"
           },
           {
             "turn_index": 48,
@@ -8755,7 +8755,7 @@
           {
             "turn_index": 72,
             "speaker": "tutor",
-            "message": "Becuase we added all the angles together and got 360 + m - n "
+            "message": "Becuase we added all the angles together and got 360 + m - n"
           },
           {
             "turn_index": 73,
@@ -8815,7 +8815,7 @@
           {
             "turn_index": 84,
             "speaker": "tutor",
-            "message": "Yes, great "
+            "message": "Yes, great"
           },
           {
             "turn_index": 85,
@@ -8912,31 +8912,31 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Nadine :)"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "How can I help?"
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "ok no problem!"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Imagine she has 6 friends. She shares the apples out between them so that they each have the same amount"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "so there are 6 equal groups of apples"
         },
@@ -9072,7 +9072,7 @@
           {
             "turn_index": 20,
             "speaker": "tutor",
-            "message": "we found 6, what number would be next? "
+            "message": "we found 6, what number would be next?"
           },
           {
             "turn_index": 21,
@@ -9484,7 +9484,7 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Elara!"
         },
@@ -9496,7 +9496,7 @@
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Ok the decimal is the difficult part, so first let's multiply the numbers"
         },
@@ -9508,13 +9508,13 @@
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Great. Now we don't have 4, we have 0.4"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "So if a number in the question is ten times smaller, the answer will be ten times smaller"
         },
@@ -9526,7 +9526,7 @@
         },
         {
           "turn_id": "t8",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "And that's your answer :)"
         }
@@ -10056,7 +10056,7 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi! How can I help?"
         },
@@ -10074,13 +10074,13 @@
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "okay good, so it can't be A!"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "let's try to simplify 75/150"
         },
@@ -10306,7 +10306,7 @@
           {
             "turn_index": 38,
             "speaker": "tutor",
-            "message": "yay well done! "
+            "message": "yay well done!"
           },
           {
             "turn_index": 39,
@@ -10436,7 +10436,7 @@
           {
             "turn_index": 64,
             "speaker": "tutor",
-            "message": "good! "
+            "message": "good!"
           },
           {
             "turn_index": 65,
@@ -10476,7 +10476,7 @@
           {
             "turn_index": 72,
             "speaker": "tutor",
-            "message": "good! "
+            "message": "good!"
           },
           {
             "turn_index": 73,
@@ -10561,7 +10561,7 @@
           {
             "turn_index": 89,
             "speaker": "tutor",
-            "message": "okay no problem! "
+            "message": "okay no problem!"
           },
           {
             "turn_index": 90,
@@ -10618,7 +10618,7 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Liam!"
         },
@@ -10630,31 +10630,31 @@
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "great, just give me a few secs to read it"
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "OK, so the survey is about driving, and it looks like they are asking uni students to take part in the survey"
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "so imagine you are standing in the elm avenue talking to uni students"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "does it make sense to you that when you start the survey with them, you won't know if they drive, you would just know that they are students?"
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "cos if they are students then they can take part in the survey"
         },
@@ -10828,7 +10828,7 @@
           {
             "turn_index": 30,
             "speaker": "tutor",
-            "message": "no, sorry, not as many as that. "
+            "message": "no, sorry, not as many as that."
           },
           {
             "turn_index": 31,
@@ -10908,7 +10908,7 @@
           {
             "turn_index": 46,
             "speaker": "tutor",
-            "message": "follow the two lines coming out of that circle, and you'll see that the diagram is splitting those 72 males into the number that can drive and those who can't drive. "
+            "message": "follow the two lines coming out of that circle, and you'll see that the diagram is splitting those 72 males into the number that can drive and those who can't drive."
           },
           {
             "turn_index": 47,
@@ -11175,7 +11175,7 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi - no problem"
         },
@@ -11187,31 +11187,31 @@
         },
         {
           "turn_id": "t3",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Of course."
         },
         {
           "turn_id": "t4",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "This one is easier to do if you have pen and paper with you."
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Do you have pen and paper?"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "OK."
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "If you have pen and paper the easiest thing to do is to sketch this."
         },
@@ -11545,7 +11545,7 @@
           {
             "turn_index": 62,
             "speaker": "tutor",
-            "message": "The difference between the y-coordinates "
+            "message": "The difference between the y-coordinates"
           },
           {
             "turn_index": 63,
@@ -11732,13 +11732,13 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "Hi Morgan \ud83d\udc4b\ud83d\udc4b\ud83d\udc4b"
         },
         {
           "turn_id": "t2",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "So for this one we need to do..."
         },
@@ -11768,7 +11768,7 @@
         },
         {
           "turn_id": "t7",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "And then add up all the answers to get our final answer \ud83d\ude01\ud83d\udc4d"
         },
@@ -11862,7 +11862,7 @@
           {
             "turn_index": 14,
             "speaker": "tutor",
-            "message": "1 x 2/3 = 2/3 \ud83d\ude0a\ud83d\udc4d\n"
+            "message": "1 x 2/3 = 2/3 \ud83d\ude0a\ud83d\udc4d"
           },
           {
             "turn_index": 15,
@@ -11907,7 +11907,7 @@
           {
             "turn_index": 23,
             "speaker": "tutor",
-            "message": "When multiplying fractions, you multiply the numerators together and the denominators \ud83d\ude01 "
+            "message": "When multiplying fractions, you multiply the numerators together and the denominators \ud83d\ude01"
           },
           {
             "turn_index": 24,
@@ -11962,7 +11962,7 @@
           {
             "turn_index": 34,
             "speaker": "tutor",
-            "message": "I am helping several students at once so I am trying to be as quick as possible with everyone \ud83d\ude0a\n"
+            "message": "I am helping several students at once so I am trying to be as quick as possible with everyone \ud83d\ude0a"
           },
           {
             "turn_index": 35,
@@ -12072,7 +12072,7 @@
           {
             "turn_index": 56,
             "speaker": "tutor",
-            "message": "Then multiply the denominators "
+            "message": "Then multiply the denominators"
           },
           {
             "turn_index": 57,
@@ -12097,7 +12097,7 @@
           {
             "turn_index": 61,
             "speaker": "tutor",
-            "message": "2/3 x 1/2 = 2/6 "
+            "message": "2/3 x 1/2 = 2/6"
           },
           {
             "turn_index": 62,
@@ -12289,9 +12289,9 @@
       "scaffold_sequence": [
         {
           "turn_id": "t1",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
-          "message": "Hello! How can I assist you today?\n"
+          "message": "Hello! How can I assist you today?"
         },
         {
           "turn_id": "t2",
@@ -12313,13 +12313,13 @@
         },
         {
           "turn_id": "t5",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "The way we write 400 in Roman numerals is 500 - 100 \ud83e\udde0"
         },
         {
           "turn_id": "t6",
-          "type": "<None>",
+          "type": "tutor_message",
           "support_level": 1,
           "message": "So D = 500"
         },
@@ -12359,7 +12359,7 @@
           {
             "turn_index": 2,
             "speaker": "tutor",
-            "message": "Hello! How can I assist you today?\n"
+            "message": "Hello! How can I assist you today?"
           },
           {
             "turn_index": 3,
@@ -12599,7 +12599,7 @@
           {
             "turn_index": 50,
             "speaker": "tutor",
-            "message": "How did we write 400 again? "
+            "message": "How did we write 400 again?"
           },
           {
             "turn_index": 51,

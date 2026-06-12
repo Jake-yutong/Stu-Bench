@@ -30,6 +30,20 @@ ANSWER_LABELS = {
 }
 
 
+def _clean_text(value: object, fallback: str = "") -> str:
+    if pd.isna(value):
+        return fallback
+    text = str(value).strip()
+    if text.lower() in {"nan", "none", "<none>"}:
+        return fallback
+    return text
+
+
+def _scaffold_type(value: object) -> str:
+    cleaned = _clean_text(value)
+    return cleaned if cleaned else "tutor_message"
+
+
 def select_episode_ids(dialogues: pd.DataFrame, count: int, min_turns: int) -> list[tuple[int, int]]:
     grouped = (
         dialogues.groupby(["InterventionId", "QuestionId_DQ"])
@@ -43,7 +57,7 @@ def select_episode_ids(dialogues: pd.DataFrame, count: int, min_turns: int) -> l
 
 def _question_text(metadata_rows: pd.DataFrame) -> str:
     matches = metadata_rows[metadata_rows["Label"] == "Question Text"].sort_values("Sequence")
-    return str(matches.iloc[0]["Text"]) if not matches.empty else "Question text unavailable"
+    return _clean_text(matches.iloc[0]["Text"], fallback="Question text unavailable") if not matches.empty else "Question text unavailable"
 
 
 def _answer_options(metadata_rows: pd.DataFrame) -> list[AnswerOption]:
@@ -51,7 +65,7 @@ def _answer_options(metadata_rows: pd.DataFrame) -> list[AnswerOption]:
     for row in metadata_rows.sort_values("Sequence").itertuples():
         label = ANSWER_LABELS.get(str(row.Label))
         if label:
-            options.append(AnswerOption(label=label, text=str(row.Text)))
+            options.append(AnswerOption(label=label, text=_clean_text(row.Text)))
     return options
 
 
@@ -60,9 +74,9 @@ def _subject_topic(subject_rows: pd.DataFrame) -> tuple[str | None, str | None]:
     topic = None
     for row in subject_rows.sort_values("SubjectLevel").itertuples():
         if row.SubjectType == "Subject" and subject is None:
-            subject = str(row.SubjectName)
+            subject = _clean_text(row.SubjectName)
         if row.SubjectType == "Topic" and topic is None:
-            topic = str(row.SubjectName)
+            topic = _clean_text(row.SubjectName)
     return subject, topic
 
 
@@ -87,16 +101,16 @@ def build_episode_record(
         DialogueTurn(
             turn_index=int(row.MessageSequence),
             speaker="tutor" if int(row.IsTutor) == 1 else "student",
-            message=str(row.MessageString),
+            message=_clean_text(row.MessageString),
         )
         for row in rows.itertuples()
     ]
     scaffold = [
         ScaffoldTurn(
             turn_id=f"t{idx + 1}",
-            type=str(row.TalkMovePrediction) if pd.notna(row.TalkMovePrediction) else "tutor_message",
+            type=_scaffold_type(row.TalkMovePrediction),
             support_level=1 if int(row.IsTutor) == 1 else 0,
-            message=str(row.MessageString),
+            message=_clean_text(row.MessageString),
         )
         for idx, row in enumerate(rows[rows["IsTutor"] == 1].itertuples())
     ]
@@ -138,6 +152,8 @@ def prepare(input_dir: Path, output_path: Path, count: int = 20, min_turns: int 
     subjects = pd.read_csv(input_dir / "dialogue-subjects.csv")
     keys = select_episode_ids(dialogues, count=count, min_turns=min_turns)
     episodes = [build_episode_record(key, dialogues, metadata, subjects) for key in keys]
+    if len(episodes) != count:
+        raise ValueError(f"Expected {count} episodes but only found {len(episodes)} eligible")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps([episode.model_dump() for episode in episodes], indent=2))
     return episodes
