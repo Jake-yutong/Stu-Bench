@@ -51,7 +51,7 @@ def build_student_messages(
             f"Episode history:\n{history_text}\n\n"
             f"Tutor message:\n{current_scaffold}"
         )
-    else:
+    elif mode == TestMode.context_engineered:
         scs = episode.lcs.scs
         kc_states = ", ".join(
             f"{item.kc_id}={item.state}" for item in scs.kc_state_abstraction
@@ -68,5 +68,7 @@ def build_student_messages(
             f"Current tutor scaffold:\n{current_scaffold}\n\n"
             "Generate one student response only. Show plausible uptake only when the scaffold supports it."
         )
+    else:
+        raise ValueError(f"Unknown test mode: {mode!r}")
 
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
