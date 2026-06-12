@@ -28,3 +28,23 @@ def test_health_endpoint_allows_loopback_3000_origin():
 
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == origin
+
+
+def test_list_episodes_returns_demo_summaries():
+    client = TestClient(app)
+    response = client.get("/api/episodes")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload["episodes"]) >= 1
+    first = payload["episodes"][0]
+    assert {"episode_id", "question_id", "intervention_id", "problem_preview"} <= set(first)
+
+
+def test_get_episode_returns_scs_but_not_ecs_by_default():
+    client = TestClient(app)
+    episode_id = client.get("/api/episodes").json()["episodes"][0]["episode_id"]
+    response = client.get(f"/api/episodes/{episode_id}")
+    assert response.status_code == 200
+    payload = response.json()
+    assert "scs" in payload["lcs"]
+    assert "ecs" not in payload["lcs"]

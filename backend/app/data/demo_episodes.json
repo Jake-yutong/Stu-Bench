@@ -1,0 +1,48 @@
+[
+  {
+    "episode_id": "demo-001",
+    "intervention_id": 10,
+    "question_id": 104614,
+    "subject": "Number",
+    "topic": "Rounding and Estimating",
+    "problem": {
+      "text": "Who is correct when rounding 5.4598?",
+      "answer_options": [
+        {"label": "A", "text": "Only Alex"},
+        {"label": "B", "text": "Only Sophie"},
+        {"label": "C", "text": "Both Alex and Sophie"},
+        {"label": "D", "text": "Neither Alex nor Sophie"}
+      ]
+    },
+    "lcs": {
+      "kc_components": [
+        {"id": "kc-rounding-place-value", "description": "Round decimals to a requested place value"}
+      ],
+      "scaffold_sequence": [
+        {"turn_id": "t1", "type": "questioning", "support_level": 1, "message": "What digit should we inspect for 1 decimal place?"}
+      ],
+      "scs": {
+        "visible_learner_profile": "A Year 7 learner who answers briefly and is unsure about decimal place value.",
+        "initial_learner_state": "Partially understands rounding but confuses which digit controls the decision.",
+        "current_confusion": "May round 5.4598 to 5.4 when asked for one decimal place.",
+        "language_style": "Short, tentative, student-like responses.",
+        "kc_state_abstraction": [
+          {"kc_id": "kc-rounding-place-value", "state": "partial"}
+        ]
+      },
+      "ecs": {
+        "ground_truth_answer": "C",
+        "real_student_trajectory": [
+          {"turn_index": 1, "speaker": "tutor", "message": "Hello Lina, just wanted to check, you OK?"},
+          {"turn_index": 2, "speaker": "student", "message": "Hi I would you preferred to be called Lina Chen"}
+        ],
+        "reference_kc_transitions": [
+          {"turn_index": 1, "states": [{"kc_id": "kc-rounding-place-value", "value": 0.5}]}
+        ],
+        "misconception_path": "Confuses decimal place inspected during rounding.",
+        "uptake_evidence": "Student should revise based on digit inspection prompt.",
+        "evaluation_rubric": "Reward gradual, scaffold-linked improvement and penalize expert-like leaps."
+      }
+    }
+  }
+]
