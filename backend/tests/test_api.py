@@ -52,7 +52,10 @@ def test_list_episodes_returns_demo_summaries():
 
 def test_get_episode_returns_scs_but_not_ecs_by_default():
     client = TestClient(app)
-    response = client.get("/api/episodes/demo-001")
+    list_response = client.get("/api/episodes")
+    episode_id = list_response.json()["episodes"][0]["episode_id"]
+
+    response = client.get(f"/api/episodes/{episode_id}")
     assert response.status_code == 200
     payload = response.json()
     assert "scs" in payload["lcs"]
