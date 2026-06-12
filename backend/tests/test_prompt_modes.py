@@ -19,8 +19,13 @@ def test_prompts_exclude_evaluator_leakage(mode: Mode):
     messages = build_student_messages(_episode(), mode, [], "Tutor hint")
     joined = "\n".join(message["content"] for message in messages)
     assert "ground_truth_answer" not in joined
-    assert "evaluation_rubric" not in joined
     assert "real_student_trajectory" not in joined
+    assert "reference_kc_transitions" not in joined
+    assert "misconception_path" not in joined
+    assert "uptake_evidence" not in joined
+    assert "evaluation_rubric" not in joined
+    assert "Confuses decimal place inspected during rounding." not in joined
+    assert "Student should revise based on digit inspection prompt." not in joined
 
 
 def test_roleplay_prompt_excludes_profile_and_ecs():
