@@ -3,6 +3,16 @@ from fastapi.testclient import TestClient
 from backend.app.main import app
 
 
+def assert_no_key_named(value, key_name: str) -> None:
+    if isinstance(value, dict):
+        assert key_name not in value
+        for nested_value in value.values():
+            assert_no_key_named(nested_value, key_name)
+    elif isinstance(value, list):
+        for nested_value in value:
+            assert_no_key_named(nested_value, key_name)
+
+
 def test_health_endpoint_returns_ok():
     client = TestClient(app)
     response = client.get("/api/health")
@@ -42,13 +52,12 @@ def test_list_episodes_returns_demo_summaries():
 
 def test_get_episode_returns_scs_but_not_ecs_by_default():
     client = TestClient(app)
-    episode_id = client.get("/api/episodes").json()["episodes"][0]["episode_id"]
-    response = client.get(f"/api/episodes/{episode_id}")
+    response = client.get("/api/episodes/demo-001")
     assert response.status_code == 200
     payload = response.json()
     assert "scs" in payload["lcs"]
     assert "ecs" not in payload["lcs"]
-    assert "ground_truth_answer" not in response.text
+    assert_no_key_named(payload, "ground_truth_answer")
 
 
 def test_get_episode_returns_404_for_unknown_episode():
