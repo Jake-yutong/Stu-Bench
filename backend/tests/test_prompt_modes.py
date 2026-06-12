@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from collections.abc import Iterator
 
 import pytest
 
@@ -14,18 +15,53 @@ def _episode() -> EpisodeRecord:
     return EpisodeRecord.model_validate(json.loads(FIXTURE.read_text()))
 
 
+def _ecs_scalar_values(payload: object) -> Iterator[str]:
+    if payload is None:
+        return
+    if isinstance(payload, dict):
+        for value in payload.values():
+            yield from _ecs_scalar_values(value)
+        return
+    if isinstance(payload, list):
+        for value in payload:
+            yield from _ecs_scalar_values(value)
+        return
+    if isinstance(payload, (str, int, float)):
+        text = str(payload)
+        if text:
+            yield text
+
+
+def _assert_ecs_values_absent(mode: Mode, joined: str) -> None:
+    ecs_payload = _episode().lcs.ecs.model_dump()
+    # Tiny allowlist for benign overlaps with visible prompt text:
+    # - "student" appears in the roleplay/system wording
+    # - "tutor" appears in "tutoring dialogue" and "Tutor hint"
+    # - "C" appears in the public answer options
+    # - "1" appears in the shared "1 decimal place" scaffold text
+    # - "kc-rounding-place-value" appears in the visible KC abstraction for profile/context-engineered modes
+    allowlist = {"student", "tutor", "1", "C", "kc-rounding-place-value"}
+    for value in _ecs_scalar_values(ecs_payload):
+        if value in allowlist:
+            continue
+        assert value not in joined, f"{mode.value} prompt leaked ECS scalar value: {value!r}"
+
+
 @pytest.mark.parametrize("mode", [Mode.roleplay, Mode.profile, Mode.context_engineered])
 def test_prompts_exclude_evaluator_leakage(mode: Mode):
     messages = build_student_messages(_episode(), mode, [], "Tutor hint")
     joined = "\n".join(message["content"] for message in messages)
-    assert "ground_truth_answer" not in joined
-    assert "real_student_trajectory" not in joined
-    assert "reference_kc_transitions" not in joined
-    assert "misconception_path" not in joined
-    assert "uptake_evidence" not in joined
-    assert "evaluation_rubric" not in joined
-    assert "Confuses decimal place inspected during rounding." not in joined
-    assert "Student should revise based on digit inspection prompt." not in joined
+    ecs_fields = (
+        "ground_truth_answer",
+        "real_student_trajectory",
+        "reference_kc_transitions",
+        "misconception_path",
+        "uptake_evidence",
+        "evaluation_rubric",
+    )
+    for field_name in ecs_fields:
+        assert field_name not in joined
+    _assert_ecs_values_absent(mode, joined)
 
 
 def test_roleplay_prompt_excludes_profile_and_ecs():
