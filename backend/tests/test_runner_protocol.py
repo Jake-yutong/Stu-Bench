@@ -8,7 +8,7 @@ from backend.app.data.schemas import (
     ProviderConfig,
     ProviderPreset,
     ScaffoldTurn,
-    TestMode,
+    TestMode as Mode,
 )
 from backend.app.services.provider_adapter import ProviderError
 from backend.app.services.runner import run_episode
@@ -48,6 +48,10 @@ def _mock_provider() -> ProviderConfig:
     )
 
 
+def _prompt_text(messages: list[dict[str, str]]) -> str:
+    return "\n".join(message["content"] for message in messages)
+
+
 @pytest.mark.anyio
 async def test_run_episode_calls_student_once_per_scaffold_turn(monkeypatch):
     episode = _two_turn_episode()
@@ -60,7 +64,7 @@ async def test_run_episode_calls_student_once_per_scaffold_turn(monkeypatch):
 
     monkeypatch.setattr("backend.app.services.runner.chat_completion", fake_chat_completion)
 
-    result = await run_episode(episode, TestMode.roleplay, _mock_provider())
+    result = await run_episode(episode, Mode.roleplay, _mock_provider())
 
     assert result.status == "succeeded"
     assert len(result.generated_trajectory) == len(episode.lcs.scaffold_sequence)
@@ -68,14 +72,49 @@ async def test_run_episode_calls_student_once_per_scaffold_turn(monkeypatch):
 
 
 @pytest.mark.anyio
-async def test_run_episode_starts_with_clean_history_each_time():
-    episode = _episode()
+async def test_run_episode_passes_progressive_history_into_prompts(monkeypatch):
+    episode = _two_turn_episode()
+    captured_messages = []
+    responses = ["student-turn-one-marker", "student-turn-two-marker"]
 
-    first = await run_episode(episode, TestMode.profile, _mock_provider())
-    second = await run_episode(episode, TestMode.profile, _mock_provider())
+    async def fake_chat_completion(config, messages):
+        captured_messages.append(messages)
+        return responses[len(captured_messages) - 1]
+
+    monkeypatch.setattr("backend.app.services.runner.chat_completion", fake_chat_completion)
+
+    result = await run_episode(episode, Mode.profile, _mock_provider())
+
+    second_prompt = _prompt_text(captured_messages[1])
+    assert result.status == "succeeded"
+    assert episode.lcs.scaffold_sequence[0].message in second_prompt
+    assert "student-turn-one-marker" in second_prompt
+
+
+@pytest.mark.anyio
+async def test_run_episode_starts_with_clean_history_each_time(monkeypatch):
+    episode = _two_turn_episode()
+    captured_messages = []
+    responses = [
+        "first-run-first-response-marker",
+        "first-run-second-response",
+        "second-run-first-response",
+        "second-run-second-response",
+    ]
+
+    async def fake_chat_completion(config, messages):
+        captured_messages.append(messages)
+        return responses[len(captured_messages) - 1]
+
+    monkeypatch.setattr("backend.app.services.runner.chat_completion", fake_chat_completion)
+
+    first = await run_episode(episode, Mode.context_engineered, _mock_provider())
+    second = await run_episode(episode, Mode.context_engineered, _mock_provider())
 
     assert first.generated_trajectory[0].turn_index == 1
     assert second.generated_trajectory[0].turn_index == 1
+    second_run_first_prompt = _prompt_text(captured_messages[2])
+    assert "first-run-first-response-marker" not in second_run_first_prompt
 
 
 @pytest.mark.anyio
@@ -92,7 +131,7 @@ async def test_run_episode_returns_failed_result_with_partial_trajectory(monkeyp
 
     monkeypatch.setattr("backend.app.services.runner.chat_completion", fake_chat_completion)
 
-    result = await run_episode(episode, TestMode.context_engineered, _mock_provider())
+    result = await run_episode(episode, Mode.context_engineered, _mock_provider())
 
     assert result.status == "failed"
     assert len(result.generated_trajectory) == 1
