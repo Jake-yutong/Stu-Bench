@@ -48,3 +48,12 @@ def test_get_episode_returns_scs_but_not_ecs_by_default():
     payload = response.json()
     assert "scs" in payload["lcs"]
     assert "ecs" not in payload["lcs"]
+    assert "ground_truth_answer" not in response.text
+
+
+def test_get_episode_returns_404_for_unknown_episode():
+    client = TestClient(app)
+    response = client.get("/api/episodes/not-real")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Episode not found"}
