@@ -37,7 +37,10 @@ async def chat_completion(config: ProviderConfig, messages: list[dict[str, str]]
         raise ProviderError(f"Provider request failed: {exc}") from exc
     if response.status_code >= 400:
         raise ProviderError(f"Provider returned {response.status_code}: {response.text[:500]}")
-    data = response.json()
+    try:
+        data = response.json()
+    except ValueError as exc:
+        raise ProviderError(f"Provider response was not valid JSON: {exc}") from exc
     try:
         return str(data["choices"][0]["message"]["content"]).strip()
     except (KeyError, IndexError, TypeError) as exc:
