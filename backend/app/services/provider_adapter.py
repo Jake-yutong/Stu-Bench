@@ -30,8 +30,11 @@ async def chat_completion(config: ProviderConfig, messages: list[dict[str, str]]
         "temperature": config.temperature,
         "max_tokens": 600,
     }
-    async with httpx.AsyncClient(timeout=60) as client:
-        response = await client.post(url, headers=headers, json=payload)
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            response = await client.post(url, headers=headers, json=payload)
+    except httpx.HTTPError as exc:
+        raise ProviderError(f"Provider request failed: {exc}") from exc
     if response.status_code >= 400:
         raise ProviderError(f"Provider returned {response.status_code}: {response.text[:500]}")
     data = response.json()

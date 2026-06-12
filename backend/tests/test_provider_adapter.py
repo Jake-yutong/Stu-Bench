@@ -1,7 +1,8 @@
 import pytest
+import httpx
 
 from backend.app.data.schemas import ProviderConfig, ProviderPreset
-from backend.app.services.provider_adapter import chat_completion, provider_base_url
+from backend.app.services.provider_adapter import ProviderError, chat_completion, provider_base_url
 
 
 def test_provider_presets_resolve_base_urls():
@@ -21,3 +22,32 @@ async def test_mock_provider_returns_deterministic_student_text():
     )
     text = await chat_completion(config, [{"role": "user", "content": "Tutor message: Try rounding."}])
     assert "I think" in text
+
+
+@pytest.mark.anyio
+async def test_httpx_request_errors_are_wrapped_as_provider_error(monkeypatch):
+    config = ProviderConfig(
+        preset=ProviderPreset.openai,
+        base_url="https://api.openai.com/v1",
+        api_key="secret",
+        model="gpt-test",
+        temperature=0.4,
+    )
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def post(self, *args, **kwargs):
+            raise httpx.ConnectError("boom", request=httpx.Request("POST", "https://example.com"))
+
+    monkeypatch.setattr("backend.app.services.provider_adapter.httpx.AsyncClient", FakeClient)
+
+    with pytest.raises(ProviderError, match="Provider request failed"):
+        await chat_completion(config, [{"role": "user", "content": "hello"}])

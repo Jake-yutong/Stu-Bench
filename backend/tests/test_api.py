@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
+from backend.app.services.provider_adapter import ProviderError
 
 
 def assert_no_key_named(value, key_name: str) -> None:
@@ -69,3 +70,26 @@ def test_get_episode_returns_404_for_unknown_episode():
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Episode not found"}
+
+
+def test_provider_test_endpoint_returns_400_for_provider_error(monkeypatch):
+    client = TestClient(app)
+
+    async def fake_chat_completion(*args, **kwargs):
+        raise ProviderError("Provider request failed: boom")
+
+    monkeypatch.setattr("backend.app.api.providers.chat_completion", fake_chat_completion)
+
+    response = client.post(
+        "/api/providers/test",
+        json={
+            "preset": "mock",
+            "base_url": "mock://local",
+            "api_key": "mock",
+            "model": "mock-student",
+            "temperature": 0.4,
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Provider request failed: boom"}
