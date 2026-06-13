@@ -1,6 +1,6 @@
 "use client";
 
-export function ThemeToggle() {
+export function ThemeToggle({ label = "Toggle theme" }: { label?: string }) {
   function toggleTheme() {
     const current = document.documentElement.dataset.theme;
     document.documentElement.dataset.theme = current === "dark" ? "light" : "dark";
@@ -8,7 +8,7 @@ export function ThemeToggle() {
 
   return (
     <button type="button" onClick={toggleTheme}>
-      Toggle theme
+      {label}
     </button>
   );
 }

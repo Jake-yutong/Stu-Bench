@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 
 import { ApiConfigPanel } from "./ApiConfigPanel";
 import { DialogueTimeline } from "./DialogueTimeline";
+import { FormattedMathText } from "./FormattedMathText";
 import { ResultsPanel } from "./ResultsPanel";
 import { ThemeToggle } from "./ThemeToggle";
 import { apiGet, apiPost } from "../lib/api";
+import { formatMathText } from "../lib/formatMathText";
+import { copy, type Language } from "../lib/i18n";
 import type {
   EpisodeDetail,
   EpisodeSummary,
@@ -28,6 +31,8 @@ const mockProvider: ProviderConfig = {
 };
 
 export function EpisodeWorkbench() {
+  const [language, setLanguage] = useState<Language>("en");
+  const t = copy[language];
   const [studentProvider, setStudentProvider] = useState<ProviderConfig>(mockProvider);
   const [judgeProvider, setJudgeProvider] = useState<ProviderConfig>({
     ...mockProvider,
@@ -35,7 +40,9 @@ export function EpisodeWorkbench() {
   });
   const [mode, setMode] = useState<TestMode>("context_engineered");
   const [episodes, setEpisodes] = useState<EpisodeSummary[]>([]);
-  const [selectedEpisodeId, setSelectedEpisodeId] = useState("");
+  const [selectedEpisodeIds, setSelectedEpisodeIds] = useState<string[]>([]);
+  const [activeEpisodeId, setActiveEpisodeId] = useState("");
+  const [testCount, setTestCount] = useState(1);
   const [episode, setEpisode] = useState<EpisodeDetail | null>(null);
   const [run, setRun] = useState<RunPayload | null>(null);
   const [runId, setRunId] = useState<string | null>(null);
@@ -45,22 +52,59 @@ export function EpisodeWorkbench() {
   const [connectionStatus, setConnectionStatus] = useState<{
     student: string;
     judge: string;
-  }>({ student: "Student API: not tested", judge: "Judge API: not tested" });
+  }>({ student: copy.en.studentNotTested, judge: copy.en.judgeNotTested });
   const [isTestingConnections, setIsTestingConnections] = useState(false);
 
   useEffect(() => {
     apiGet<{ episodes: EpisodeSummary[] }>("/api/episodes").then((payload) => {
       setEpisodes(payload.episodes);
       if (payload.episodes[0]) {
-        setSelectedEpisodeId(payload.episodes[0].episode_id);
+        setActiveEpisodeId(payload.episodes[0].episode_id);
+        setTestCount(1);
       }
     });
   }, []);
 
   useEffect(() => {
-    if (!selectedEpisodeId) return;
-    apiGet<EpisodeDetail>(`/api/episodes/${selectedEpisodeId}`).then(setEpisode);
-  }, [selectedEpisodeId]);
+    if (!activeEpisodeId) return;
+    apiGet<EpisodeDetail>(`/api/episodes/${activeEpisodeId}`).then(setEpisode);
+  }, [activeEpisodeId]);
+
+  function changeLanguage(nextLanguage: Language) {
+    setLanguage(nextLanguage);
+    setConnectionStatus({
+      student: copy[nextLanguage].studentNotTested,
+      judge: copy[nextLanguage].judgeNotTested,
+    });
+  }
+
+  function toggleEpisode(episodeId: string) {
+    setActiveEpisodeId(episodeId);
+    setSelectedEpisodeIds((current) =>
+      current.includes(episodeId)
+        ? current.filter((item) => item !== episodeId)
+        : [...current, episodeId],
+    );
+  }
+
+  function changeTestCount(value: string) {
+    const parsed = Number(value);
+    const max = Math.max(episodes.length, 1);
+    const nextCount = Number.isFinite(parsed) ? Math.min(Math.max(parsed, 1), max) : 1;
+    setTestCount(nextCount);
+    if (selectedEpisodeIds.length === 0 && episodes[0]) {
+      setActiveEpisodeId(episodes[0].episode_id);
+    }
+  }
+
+  function runEpisodeIds() {
+    if (selectedEpisodeIds.length > 0) {
+      return episodes
+        .filter((item) => selectedEpisodeIds.includes(item.episode_id))
+        .map((item) => item.episode_id);
+    }
+    return episodes.slice(0, Math.min(testCount, episodes.length)).map((item) => item.episode_id);
+  }
 
   async function pollRun(nextRunId: string) {
     const status = await apiGet<RunStatus>(`/api/runs/${nextRunId}/events`);
@@ -85,9 +129,8 @@ export function EpisodeWorkbench() {
   }
 
   async function runSelected() {
-    const episodeIds = selectedEpisodeId
-      ? [selectedEpisodeId]
-      : episodes.map((item) => item.episode_id);
+    const episodeIds = runEpisodeIds();
+    if (episodeIds.length === 0) return;
     try {
       setRun(null);
       setRunId(null);
@@ -109,24 +152,24 @@ export function EpisodeWorkbench() {
     }
   }
 
-  async function testProvider(label: "Student API" | "Judge API", provider: ProviderConfig) {
+  async function testProvider(label: string, provider: ProviderConfig) {
     try {
       const result = await apiPost<ProviderTestResponse>("/api/providers/test", provider);
-      return `${label}: ${result.sample || (result.ok ? "connection ok" : "failed")}`;
+      return `${label}: ${result.sample || (result.ok ? t.connectionOk : t.failed)}`;
     } catch (error) {
-      return `${label}: ${error instanceof Error ? error.message : "connection failed"}`;
+      return `${label}: ${error instanceof Error ? error.message : t.failed}`;
     }
   }
 
   async function testConnections() {
     setIsTestingConnections(true);
     setConnectionStatus({
-      student: "Student API: testing...",
-      judge: "Judge API: testing...",
+      student: t.studentTesting,
+      judge: t.judgeTesting,
     });
     const [student, judge] = await Promise.all([
-      testProvider("Student API", studentProvider),
-      testProvider("Judge API", judgeProvider),
+      testProvider(t.studentApi, studentProvider),
+      testProvider(t.judgeApi, judgeProvider),
     ]);
     setConnectionStatus({ student, judge });
     setIsTestingConnections(false);
@@ -134,49 +177,102 @@ export function EpisodeWorkbench() {
 
   const runStatusText = runStatus
     ? `${runStatus.status}: ${runStatus.completed}/${runStatus.total}`
-    : "idle: 0/0";
+    : t.idleStatus;
 
   return (
     <main className="workbench">
       <header className="topbar">
         <div>
-          <h1>Stu-Bench Demo</h1>
-          <p>Local-first benchmark workbench for simulated student realism.</p>
+          <h1>{t.appTitle}</h1>
+          <p>{t.appSubtitle}</p>
         </div>
-        <ThemeToggle />
+        <div className="top-actions">
+          <label className="compact-label">
+            {t.language}
+            <select
+              aria-label="Language"
+              value={language}
+              onChange={(event) => changeLanguage(event.target.value as Language)}
+            >
+              <option value="en">{t.english}</option>
+              <option value="zh">{t.chinese}</option>
+            </select>
+          </label>
+          <ThemeToggle label={t.toggleTheme} />
+        </div>
       </header>
       <section className="columns">
         <aside className="panel setup-panel">
           <ApiConfigPanel
-            title="Student API"
-            providerLabel="Student provider"
+            title={t.studentApi}
+            providerLabel={t.studentProvider}
             provider={studentProvider}
             onChange={setStudentProvider}
+            labels={{
+              baseUrl: t.baseUrl,
+              model: t.model,
+              apiKey: t.apiKey,
+              temperature: t.temperature,
+            }}
           />
           <ApiConfigPanel
-            title="Judge API"
-            providerLabel="Judge provider"
+            title={t.judgeApi}
+            providerLabel={t.judgeProvider}
             provider={judgeProvider}
             onChange={setJudgeProvider}
+            labels={{
+              baseUrl: t.baseUrl,
+              model: t.model,
+              apiKey: t.apiKey,
+              temperature: t.temperature,
+            }}
           />
           <label>
-            Testing mode
+            {t.testingMode}
             <select
               aria-label="Testing mode"
               value={mode}
               onChange={(event) => setMode(event.target.value as TestMode)}
             >
-              <option value="roleplay">Roleplay Prompt</option>
-              <option value="profile">Profile Prompt</option>
-              <option value="context_engineered">Context-Engineered SCS</option>
+              <option value="roleplay">{t.roleplay}</option>
+              <option value="profile">{t.profile}</option>
+              <option value="context_engineered">{t.contextEngineered}</option>
             </select>
           </label>
           <label>
-            Episode
-            <select
-              value={selectedEpisodeId}
-              onChange={(event) => setSelectedEpisodeId(event.target.value)}
-            >
+            {t.testCount}
+            <input
+              aria-label="Test count"
+              type="number"
+              min="1"
+              max={Math.max(episodes.length, 1)}
+              value={testCount}
+              onChange={(event) => changeTestCount(event.target.value)}
+            />
+          </label>
+          <div className="field-label">{t.episodeSelection}</div>
+          <div className="episode-picker" role="group" aria-label={t.episodeSelection}>
+            {episodes.map((item) => (
+              <label
+                className={item.episode_id === activeEpisodeId ? "checkbox-row active" : "checkbox-row"}
+                key={item.episode_id}
+              >
+                <input
+                  aria-label={item.episode_id}
+                  type="checkbox"
+                  checked={selectedEpisodeIds.includes(item.episode_id)}
+                  onChange={() => toggleEpisode(item.episode_id)}
+                />
+                <span>
+                  <strong>{item.episode_id}</strong>
+                  <small>{formatMathText(item.problem_preview).replace(/\n/g, " ")}</small>
+                </span>
+              </label>
+            ))}
+          </div>
+          <label className="sr-only">
+            {t.episode}
+            <select value={activeEpisodeId} onChange={(event) => setActiveEpisodeId(event.target.value)}>
               {episodes.map((item) => (
                 <option key={item.episode_id} value={item.episode_id}>
                   {item.episode_id}
@@ -185,14 +281,14 @@ export function EpisodeWorkbench() {
             </select>
           </label>
           <button type="button" onClick={testConnections} disabled={isTestingConnections}>
-            {isTestingConnections ? "Testing..." : "Test connections"}
+            {isTestingConnections ? t.testing : t.testConnections}
           </button>
           <div className="status-stack" aria-live="polite">
             <div>{connectionStatus.student}</div>
             <div>{connectionStatus.judge}</div>
           </div>
           <button type="button" onClick={runSelected} disabled={isRunning}>
-            {isRunning ? "Running..." : "Run selected"}
+            {isRunning ? t.running : t.runSelected}
           </button>
           <div className="status-stack" aria-live="polite">
             <div>{runStatusText}</div>
@@ -201,21 +297,23 @@ export function EpisodeWorkbench() {
           </div>
         </aside>
         <section className="panel episode-panel">
-          <h2>Episode</h2>
+          <h2>{t.episode}</h2>
           <div className="question-box">
             {episode ? (
               <>
-                <strong>{episode.problem.text}</strong>
+                <strong>
+                  <FormattedMathText text={episode.problem.text} />
+                </strong>
                 <ul>
                   {episode.problem.answer_options.map((option) => (
                     <li key={option.label}>
-                      {option.label}. {option.text}
+                      <FormattedMathText text={`${option.label}. ${option.text}`} />
                     </li>
                   ))}
                 </ul>
               </>
             ) : (
-              "Loading episode..."
+              t.loadingEpisode
             )}
           </div>
           <div className="context-grid">
@@ -223,18 +321,27 @@ export function EpisodeWorkbench() {
               {episode ? (
                 <pre>{JSON.stringify(episode.lcs.scs, null, 2)}</pre>
               ) : (
-                "SCS summary"
+                t.scsSummary
               )}
             </div>
             <div>
               {episode
                 ? episode.lcs.scaffold_sequence.map((turn) => turn.message).join("\n")
-                : "Scaffold sequence"}
+                : t.scaffoldSequence}
             </div>
           </div>
-          <DialogueTimeline turns={run?.results?.[0]?.generated_trajectory ?? []} />
+          <DialogueTimeline
+            turns={run?.results?.[0]?.generated_trajectory ?? []}
+            labels={{
+              ariaLabel: t.dialogueTimeline,
+              emptyTutor: t.emptyTutor,
+              emptyStudent: t.emptyStudent,
+              tutorPrefix: t.tutorPrefix,
+              studentPrefix: t.studentPrefix,
+            }}
+          />
         </section>
-        <ResultsPanel run={run} runId={runId} />
+        <ResultsPanel run={run} runId={runId} labels={t} />
       </section>
     </main>
   );

@@ -1,34 +1,54 @@
 import type { RunPayload } from "../lib/types";
 import { apiDownloadUrl } from "../lib/api";
 import { ScoreGrid } from "./ScoreGrid";
+import type { WorkbenchCopy } from "../lib/i18n";
 
-export function ResultsPanel({ run, runId }: { run: RunPayload | null; runId: string | null }) {
+export function ResultsPanel({
+  run,
+  runId,
+  labels,
+}: {
+  run: RunPayload | null;
+  runId: string | null;
+  labels?: WorkbenchCopy;
+}) {
   const scores = run?.results[0]?.judge_scores ?? null;
+  const scoreLabels = labels
+    ? [
+        labels.scoreOverall,
+        labels.scoreInitialState,
+        labels.scoreMistake,
+        labels.scoreUptake,
+        labels.scoreKcTransition,
+        labels.scoreTrajectory,
+        labels.scoreOverCompetence,
+      ]
+    : undefined;
 
   return (
     <aside className="panel results-panel">
-      <h2>Results</h2>
-      <ScoreGrid scores={scores} />
+      <h2>{labels?.results ?? "Results"}</h2>
+      <ScoreGrid scores={scores} labels={scoreLabels} />
       <div className="rationale">
-        {String(scores?.judge_rationale ?? "Judge rationale will appear here after a run.")}
+        {String(scores?.judge_rationale ?? labels?.rationalePlaceholder ?? "Judge rationale will appear here after a run.")}
       </div>
       <div className="button-row">
         {runId ? (
           <>
             <a className="button-link" href={apiDownloadUrl(`/api/runs/${runId}/export.csv`)}>
-              Export CSV
+              {labels?.exportCsv ?? "Export CSV"}
             </a>
             <a className="button-link" href={apiDownloadUrl(`/api/runs/${runId}/export.json`)}>
-              Export JSON
+              {labels?.exportJson ?? "Export JSON"}
             </a>
           </>
         ) : (
           <>
             <button type="button" disabled>
-              Export CSV
+              {labels?.exportCsv ?? "Export CSV"}
             </button>
             <button type="button" disabled>
-              Export JSON
+              {labels?.exportJson ?? "Export JSON"}
             </button>
           </>
         )}

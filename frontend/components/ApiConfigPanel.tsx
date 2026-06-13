@@ -5,6 +5,12 @@ interface Props {
   provider: ProviderConfig;
   onChange: (provider: ProviderConfig) => void;
   providerLabel: string;
+  labels: {
+    baseUrl: string;
+    model: string;
+    apiKey: string;
+    temperature: string;
+  };
 }
 
 const presets = ["openai", "deepseek", "qwen", "custom", "mock"] as const;
@@ -17,7 +23,7 @@ const presetBaseUrls: Record<ProviderConfig["preset"], string> = {
   mock: "mock://local",
 };
 
-export function ApiConfigPanel({ title, provider, onChange, providerLabel }: Props) {
+export function ApiConfigPanel({ title, provider, onChange, providerLabel, labels }: Props) {
   function changePreset(preset: ProviderConfig["preset"]) {
     onChange({
       ...provider,
@@ -44,21 +50,21 @@ export function ApiConfigPanel({ title, provider, onChange, providerLabel }: Pro
         </select>
       </label>
       <label>
-        Base URL
+        {labels.baseUrl}
         <input
           value={provider.base_url}
           onChange={(event) => onChange({ ...provider, base_url: event.target.value })}
         />
       </label>
       <label>
-        Model
+        {labels.model}
         <input
           value={provider.model}
           onChange={(event) => onChange({ ...provider, model: event.target.value })}
         />
       </label>
       <label>
-        API key
+        {labels.apiKey}
         <input
           type="password"
           value={provider.api_key}
@@ -66,7 +72,7 @@ export function ApiConfigPanel({ title, provider, onChange, providerLabel }: Pro
         />
       </label>
       <label>
-        Temperature
+        {labels.temperature}
         <input
           type="number"
           min="0"
