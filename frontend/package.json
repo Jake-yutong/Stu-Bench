@@ -3,7 +3,8 @@
     "dev": "next dev -p 3000",
     "test": "vitest",
     "test:run": "vitest run",
-    "lint": "next lint"
+    "lint": "next lint",
+    "visual": "playwright test tests/visual.spec.ts"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^6.4.0",

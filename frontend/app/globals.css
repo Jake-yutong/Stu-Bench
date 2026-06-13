@@ -158,9 +158,18 @@ button {
 }
 
 .context-grid > div {
+  max-height: 230px;
   min-height: 74px;
   padding: 12px;
   overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.context-grid pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .timeline {
@@ -219,6 +228,10 @@ button {
 
 @media (max-width: 980px) {
   .columns {
+    grid-template-columns: 1fr;
+  }
+
+  .context-grid {
     grid-template-columns: 1fr;
   }
 }

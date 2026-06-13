@@ -10,3 +10,7 @@ __pycache__/
 .env.local
 *.pyc
 *.tsbuildinfo
+.next/
+test-results/
+playwright-report/
+backend/app/storage/runs/run-*.json
