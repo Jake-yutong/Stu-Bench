@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiConfigPanel } from "./ApiConfigPanel";
 import { DialogueTimeline } from "./DialogueTimeline";
 import { ResultsPanel } from "./ResultsPanel";
 import { ThemeToggle } from "./ThemeToggle";
-import type { ProviderConfig, TestMode } from "../lib/types";
+import { apiGet, apiPost } from "../lib/api";
+import type {
+  EpisodeDetail,
+  EpisodeSummary,
+  ProviderConfig,
+  RunPayload,
+  TestMode,
+} from "../lib/types";
 
 const mockProvider: ProviderConfig = {
   preset: "mock",
@@ -23,6 +30,37 @@ export function EpisodeWorkbench() {
     model: "mock-judge",
   });
   const [mode, setMode] = useState<TestMode>("context_engineered");
+  const [episodes, setEpisodes] = useState<EpisodeSummary[]>([]);
+  const [selectedEpisodeId, setSelectedEpisodeId] = useState("");
+  const [episode, setEpisode] = useState<EpisodeDetail | null>(null);
+  const [run, setRun] = useState<RunPayload | null>(null);
+
+  useEffect(() => {
+    apiGet<{ episodes: EpisodeSummary[] }>("/api/episodes").then((payload) => {
+      setEpisodes(payload.episodes);
+      if (payload.episodes[0]) {
+        setSelectedEpisodeId(payload.episodes[0].episode_id);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!selectedEpisodeId) return;
+    apiGet<EpisodeDetail>(`/api/episodes/${selectedEpisodeId}`).then(setEpisode);
+  }, [selectedEpisodeId]);
+
+  async function runSelected() {
+    const episodeIds = selectedEpisodeId
+      ? [selectedEpisodeId]
+      : episodes.map((item) => item.episode_id);
+    const payload = await apiPost<RunPayload>("/api/runs", {
+      mode,
+      student_provider: studentProvider,
+      judge_provider: judgeProvider,
+      episode_ids: episodeIds,
+    });
+    setRun(payload);
+  }
 
   return (
     <main className="workbench">
@@ -59,20 +97,59 @@ export function EpisodeWorkbench() {
               <option value="context_engineered">Context-Engineered SCS</option>
             </select>
           </label>
+          <label>
+            Episode
+            <select
+              value={selectedEpisodeId}
+              onChange={(event) => setSelectedEpisodeId(event.target.value)}
+            >
+              {episodes.map((item) => (
+                <option key={item.episode_id} value={item.episode_id}>
+                  {item.episode_id}
+                </option>
+              ))}
+            </select>
+          </label>
           <button type="button">Test connections</button>
-          <button type="button">Run current</button>
-          <button type="button">Run selected</button>
+          <button type="button" onClick={runSelected}>
+            Run selected
+          </button>
         </aside>
         <section className="panel episode-panel">
           <h2>Episode</h2>
-          <div className="question-box">Question and answer options will load here.</div>
-          <div className="context-grid">
-            <div>SCS summary</div>
-            <div>Scaffold sequence</div>
+          <div className="question-box">
+            {episode ? (
+              <>
+                <strong>{episode.problem.text}</strong>
+                <ul>
+                  {episode.problem.answer_options.map((option) => (
+                    <li key={option.label}>
+                      {option.label}. {option.text}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              "Loading episode..."
+            )}
           </div>
-          <DialogueTimeline />
+          <div className="context-grid">
+            <div>
+              {episode ? (
+                <pre>{JSON.stringify(episode.lcs.scs, null, 2)}</pre>
+              ) : (
+                "SCS summary"
+              )}
+            </div>
+            <div>
+              {episode
+                ? episode.lcs.scaffold_sequence.map((turn) => turn.message).join("\n")
+                : "Scaffold sequence"}
+            </div>
+          </div>
+          <DialogueTimeline turns={run?.results[0]?.generated_trajectory ?? []} />
         </section>
-        <ResultsPanel />
+        <ResultsPanel run={run} />
       </section>
     </main>
   );

@@ -1,20 +1,20 @@
-const labels = [
-  "Overall",
-  "Initial State",
-  "Mistake Auth.",
-  "Uptake",
-  "KC Transition",
-  "Trajectory",
-  "Over-Competence Control",
-];
+const fields = [
+  ["overall_realism", "Overall"],
+  ["initial_state_fidelity", "Initial State"],
+  ["mistake_authenticity", "Mistake Auth."],
+  ["scaffolding_uptake", "Uptake"],
+  ["kc_transition_consistency", "KC Transition"],
+  ["learning_trajectory_plausibility", "Trajectory"],
+  ["over_competence_control", "Over-Competence Control"],
+] as const;
 
-export function ScoreGrid() {
+export function ScoreGrid({ scores }: { scores: Record<string, unknown> | null }) {
   return (
     <div className="score-grid">
-      {labels.map((label) => (
-        <div className="score-card" key={label}>
+      {fields.map(([field, label]) => (
+        <div className="score-card" key={field}>
           <span>{label}</span>
-          <strong>--</strong>
+          <strong>{scores ? String(scores[field] ?? "--") : "--"}</strong>
         </div>
       ))}
     </div>
