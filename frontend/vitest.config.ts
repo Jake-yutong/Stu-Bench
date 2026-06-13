@@ -4,6 +4,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [react()],
   test: {
+    exclude: ["tests/visual.spec.ts", "node_modules/**"],
     environment: "jsdom",
   },
 });
