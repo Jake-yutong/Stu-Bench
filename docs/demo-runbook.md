@@ -37,15 +37,32 @@ bun run dev
 
 7. Select `Context-Engineered SCS`.
 
-8. Click `Run selected`.
+8. Click `Test connections` and confirm both Student API and Judge API report
+   `connection ok`.
 
-9. Confirm the dialogue timeline, score cards, judge rationale, and exports populate.
+9. Click `Run selected`.
+
+10. Watch the progress line move through `queued`, `running`, and `completed`.
+
+11. Confirm the dialogue timeline, score cards, judge rationale, and export links populate.
 
 ## Real Provider Connection Test
 
 Use OpenAI, DeepSeek, Qwen, or Custom provider with base URL, model, API key, and
 temperature. The connection test sends a minimal request before running an
 episode.
+
+Runs are submitted as background jobs. The browser polls
+`/api/runs/{run_id}/events` for progress and fetches `/api/runs/{run_id}` only
+after completion, so a long 20-episode pre-experiment is not held open by one
+browser request. Provider calls have a backend timeout of 60 seconds per LLM
+request; if a provider times out or returns an invalid response, the run records
+that episode failure and keeps the result exportable.
+
+After a run starts, the UI exposes CSV and JSON export links:
+
+- `/api/runs/{run_id}/export.csv`
+- `/api/runs/{run_id}/export.json`
 
 ## Research Notes
 

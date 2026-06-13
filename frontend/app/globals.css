@@ -121,10 +121,51 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.button-link {
+  min-height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-muted);
+  color: var(--text);
+  padding: 7px 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+}
+
 .setup-panel {
   display: grid;
   align-content: start;
   gap: 8px;
+}
+
+.status-stack {
+  min-height: 54px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-muted);
+  color: var(--text);
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 9px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.error-text {
+  color: #b42318;
+}
+
+[data-theme="dark"] .error-text {
+  color: #fca5a5;
 }
 
 .episode-panel {

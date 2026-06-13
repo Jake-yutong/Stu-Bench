@@ -11,9 +11,13 @@ import type {
   EpisodeDetail,
   EpisodeSummary,
   ProviderConfig,
+  ProviderTestResponse,
   RunPayload,
+  RunStatus,
   TestMode,
 } from "../lib/types";
+
+const POLL_INTERVAL_MS = 250;
 
 const mockProvider: ProviderConfig = {
   preset: "mock",
@@ -34,6 +38,15 @@ export function EpisodeWorkbench() {
   const [selectedEpisodeId, setSelectedEpisodeId] = useState("");
   const [episode, setEpisode] = useState<EpisodeDetail | null>(null);
   const [run, setRun] = useState<RunPayload | null>(null);
+  const [runId, setRunId] = useState<string | null>(null);
+  const [runStatus, setRunStatus] = useState<RunStatus | null>(null);
+  const [runError, setRunError] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<{
+    student: string;
+    judge: string;
+  }>({ student: "Student API: not tested", judge: "Judge API: not tested" });
+  const [isTestingConnections, setIsTestingConnections] = useState(false);
 
   useEffect(() => {
     apiGet<{ episodes: EpisodeSummary[] }>("/api/episodes").then((payload) => {
@@ -49,18 +62,79 @@ export function EpisodeWorkbench() {
     apiGet<EpisodeDetail>(`/api/episodes/${selectedEpisodeId}`).then(setEpisode);
   }, [selectedEpisodeId]);
 
+  async function pollRun(nextRunId: string) {
+    const status = await apiGet<RunStatus>(`/api/runs/${nextRunId}/events`);
+    setRunStatus(status);
+
+    if (status.status === "failed") {
+      setRunError(status.error_message ?? "Run failed.");
+      setIsRunning(false);
+      return;
+    }
+
+    if (status.status === "completed") {
+      const payload = await apiGet<RunPayload>(`/api/runs/${nextRunId}`);
+      setRun(payload);
+      setIsRunning(false);
+      return;
+    }
+
+    window.setTimeout(() => {
+      void pollRun(nextRunId);
+    }, POLL_INTERVAL_MS);
+  }
+
   async function runSelected() {
     const episodeIds = selectedEpisodeId
       ? [selectedEpisodeId]
       : episodes.map((item) => item.episode_id);
-    const payload = await apiPost<RunPayload>("/api/runs", {
-      mode,
-      student_provider: studentProvider,
-      judge_provider: judgeProvider,
-      episode_ids: episodeIds,
-    });
-    setRun(payload);
+    try {
+      setRun(null);
+      setRunId(null);
+      setRunStatus(null);
+      setRunError("");
+      setIsRunning(true);
+      const status = await apiPost<RunStatus>("/api/runs", {
+        mode,
+        student_provider: studentProvider,
+        judge_provider: judgeProvider,
+        episode_ids: episodeIds,
+      });
+      setRunId(status.run_id);
+      setRunStatus(status);
+      void pollRun(status.run_id);
+    } catch (error) {
+      setRunError(error instanceof Error ? error.message : "Run request failed.");
+      setIsRunning(false);
+    }
   }
+
+  async function testProvider(label: "Student API" | "Judge API", provider: ProviderConfig) {
+    try {
+      const result = await apiPost<ProviderTestResponse>("/api/providers/test", provider);
+      return `${label}: ${result.sample || (result.ok ? "connection ok" : "failed")}`;
+    } catch (error) {
+      return `${label}: ${error instanceof Error ? error.message : "connection failed"}`;
+    }
+  }
+
+  async function testConnections() {
+    setIsTestingConnections(true);
+    setConnectionStatus({
+      student: "Student API: testing...",
+      judge: "Judge API: testing...",
+    });
+    const [student, judge] = await Promise.all([
+      testProvider("Student API", studentProvider),
+      testProvider("Judge API", judgeProvider),
+    ]);
+    setConnectionStatus({ student, judge });
+    setIsTestingConnections(false);
+  }
+
+  const runStatusText = runStatus
+    ? `${runStatus.status}: ${runStatus.completed}/${runStatus.total}`
+    : "idle: 0/0";
 
   return (
     <main className="workbench">
@@ -110,10 +184,21 @@ export function EpisodeWorkbench() {
               ))}
             </select>
           </label>
-          <button type="button">Test connections</button>
-          <button type="button" onClick={runSelected}>
-            Run selected
+          <button type="button" onClick={testConnections} disabled={isTestingConnections}>
+            {isTestingConnections ? "Testing..." : "Test connections"}
           </button>
+          <div className="status-stack" aria-live="polite">
+            <div>{connectionStatus.student}</div>
+            <div>{connectionStatus.judge}</div>
+          </div>
+          <button type="button" onClick={runSelected} disabled={isRunning}>
+            {isRunning ? "Running..." : "Run selected"}
+          </button>
+          <div className="status-stack" aria-live="polite">
+            <div>{runStatusText}</div>
+            {runStatus?.current_episode_id ? <div>{runStatus.current_episode_id}</div> : null}
+            {runError ? <div className="error-text">{runError}</div> : null}
+          </div>
         </aside>
         <section className="panel episode-panel">
           <h2>Episode</h2>
@@ -147,9 +232,9 @@ export function EpisodeWorkbench() {
                 : "Scaffold sequence"}
             </div>
           </div>
-          <DialogueTimeline turns={run?.results[0]?.generated_trajectory ?? []} />
+          <DialogueTimeline turns={run?.results?.[0]?.generated_trajectory ?? []} />
         </section>
-        <ResultsPanel run={run} />
+        <ResultsPanel run={run} runId={runId} />
       </section>
     </main>
   );

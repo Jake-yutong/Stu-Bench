@@ -9,6 +9,23 @@ export interface ProviderConfig {
   temperature: number;
 }
 
+export interface ProviderTestResponse {
+  ok: boolean;
+  sample?: string;
+  detail?: string;
+}
+
+export type RunStatusValue = "queued" | "running" | "completed" | "failed";
+
+export interface RunStatus {
+  run_id: string;
+  status: RunStatusValue;
+  total: number;
+  completed: number;
+  current_episode_id?: string | null;
+  error_message?: string | null;
+}
+
 export interface EpisodeSummary {
   episode_id: string;
   question_id: number;

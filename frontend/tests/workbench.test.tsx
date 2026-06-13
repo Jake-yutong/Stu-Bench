@@ -4,9 +4,12 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
 import Page from "../app/page";
 
+let providerTestBodies: Array<Record<string, unknown>> = [];
 
 beforeEach(() => {
-  global.fetch = vi.fn(async (url: RequestInfo | URL) => {
+  let eventsCalls = 0;
+  providerTestBodies = [];
+  global.fetch = vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
     const textUrl = String(url);
     if (textUrl.endsWith("/api/episodes")) {
       return new Response(
@@ -41,6 +44,46 @@ beforeEach(() => {
       );
     }
     if (textUrl.endsWith("/api/runs")) {
+      return new Response(
+        JSON.stringify({
+          run_id: "run-demo",
+          status: "queued",
+          total: 1,
+          completed: 0,
+        }),
+        { status: 200 },
+      );
+    }
+    if (textUrl.endsWith("/api/providers/test")) {
+      providerTestBodies.push(JSON.parse(String(init?.body)));
+      return new Response(JSON.stringify({ ok: true, sample: "connection ok" }), {
+        status: 200,
+      });
+    }
+    if (textUrl.endsWith("/api/runs/run-demo/events")) {
+      eventsCalls += 1;
+      return new Response(
+        JSON.stringify(
+          eventsCalls === 1
+            ? {
+                run_id: "run-demo",
+                status: "running",
+                total: 1,
+                completed: 0,
+                current_episode_id: "demo-001",
+              }
+            : {
+                run_id: "run-demo",
+                status: "completed",
+                total: 1,
+                completed: 1,
+                current_episode_id: null,
+              },
+        ),
+        { status: 200 },
+      );
+    }
+    if (textUrl.endsWith("/api/runs/run-demo")) {
       return new Response(
         JSON.stringify({
           run_id: "run-demo",
@@ -93,9 +136,50 @@ test("runs the selected mock episode and renders trajectory and scores", async (
 
   fireEvent.click(screen.getByRole("button", { name: "Run selected" }));
 
+  await waitFor(() => expect(screen.getByText("running: 0/1")).toBeInTheDocument());
   await waitFor(() =>
     expect(screen.getByText("Student: I would inspect the next digit.")).toBeInTheDocument(),
   );
   expect(screen.getByText("Mock judge rationale")).toBeInTheDocument();
   expect(screen.getByText("78")).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Export CSV" })).toHaveAttribute(
+    "href",
+    "http://localhost:8000/api/runs/run-demo/export.csv",
+  );
+  expect(screen.getByRole("link", { name: "Export JSON" })).toHaveAttribute(
+    "href",
+    "http://localhost:8000/api/runs/run-demo/export.json",
+  );
+});
+
+
+test("tests both provider connections", async () => {
+  render(<Page />);
+  await waitFor(() => expect(screen.getByText("Rounding question")).toBeInTheDocument());
+
+  fireEvent.click(screen.getByRole("button", { name: "Test connections" }));
+
+  await waitFor(() => expect(screen.getByText("Student API: connection ok")).toBeInTheDocument());
+  expect(screen.getByText("Judge API: connection ok")).toBeInTheDocument();
+});
+
+
+test("uses the provider default base URL when switching presets", async () => {
+  render(<Page />);
+  await waitFor(() => expect(screen.getByText("Rounding question")).toBeInTheDocument());
+
+  fireEvent.change(screen.getByLabelText("Student provider"), { target: { value: "qwen" } });
+  fireEvent.change(screen.getByLabelText("Judge provider"), { target: { value: "qwen" } });
+  fireEvent.click(screen.getByRole("button", { name: "Test connections" }));
+
+  await waitFor(() => expect(providerTestBodies).toHaveLength(2));
+  expect(providerTestBodies).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        preset: "qwen",
+        base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      }),
+    ]),
+  );
+  expect(providerTestBodies.every((body) => body.base_url !== "mock://local")).toBe(true);
 });
