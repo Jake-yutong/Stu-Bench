@@ -8,6 +8,10 @@ from backend.app.core.config import RUN_STORAGE_DIR
 from backend.app.data.schemas import EpisodeResult, RunConfig
 
 
+class RunNotFoundError(FileNotFoundError):
+    pass
+
+
 def new_run_id() -> str:
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
     return f"run-{timestamp}-{uuid4().hex[:8]}"
@@ -26,7 +30,10 @@ def persist_run(run_id: str, config: RunConfig, results: list[EpisodeResult]) ->
 
 
 def load_run(run_id: str) -> dict[str, object]:
-    return json.loads((RUN_STORAGE_DIR / f"{run_id}.json").read_text())
+    path = RUN_STORAGE_DIR / f"{run_id}.json"
+    if not path.exists():
+        raise RunNotFoundError(run_id)
+    return json.loads(path.read_text())
 
 
 def run_to_csv(payload: dict[str, object]) -> str:
