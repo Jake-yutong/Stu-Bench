@@ -3,6 +3,16 @@ import { apiDownloadUrl } from "../lib/api";
 import { ScoreGrid } from "./ScoreGrid";
 import type { WorkbenchCopy } from "../lib/i18n";
 
+function formatMetricValue(value: unknown) {
+  if (value === null || value === undefined) {
+    return "--";
+  }
+  if (typeof value === "number") {
+    return Number.isInteger(value) ? String(value) : value.toFixed(2);
+  }
+  return String(value);
+}
+
 export function ResultsPanel({
   result,
   runId,
@@ -24,11 +34,29 @@ export function ResultsPanel({
         labels.scoreOverCompetence,
       ]
     : undefined;
+  const formulaMetrics =
+    scores?.formula_metrics && typeof scores.formula_metrics === "object"
+      ? (scores.formula_metrics as Record<string, unknown>)
+      : null;
+  const formulaCards = [
+    [labels?.metricKts ?? "KTS", formulaMetrics?.kts],
+    [labels?.metricUptake ?? "Uptake", formulaMetrics?.uptake],
+    [labels?.metricOverImprove ?? "OverImprove", formulaMetrics?.over_improve],
+    [labels?.metricStatus ?? "Status", formulaMetrics?.status],
+  ] as const;
 
   return (
     <aside className="panel results-panel">
       <h2>{labels?.results ?? "Results"}</h2>
       <ScoreGrid scores={scores} labels={scoreLabels} />
+      <div className="formula-grid">
+        {formulaCards.map(([label, value]) => (
+          <div className="formula-card" key={label}>
+            <span>{label}</span>
+            <strong>{formatMetricValue(value)}</strong>
+          </div>
+        ))}
+      </div>
       <div className="rationale">
         {String(scores?.judge_rationale ?? labels?.rationalePlaceholder ?? "Judge rationale will appear here after a run.")}
       </div>

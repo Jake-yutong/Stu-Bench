@@ -54,6 +54,10 @@ export const copy = {
     scoreKcTransition: "KC Transition",
     scoreTrajectory: "Trajectory",
     scoreOverCompetence: "Over-Competence Control",
+    metricKts: "KTS",
+    metricUptake: "Uptake",
+    metricOverImprove: "OverImprove",
+    metricStatus: "Status",
   },
   zh: {
     appTitle: "Stu-Bench 演示",
@@ -108,6 +112,10 @@ export const copy = {
     scoreKcTransition: "知识状态转移",
     scoreTrajectory: "学习轨迹",
     scoreOverCompetence: "过度能力控制",
+    metricKts: "KTS",
+    metricUptake: "吸收率",
+    metricOverImprove: "过度提升率",
+    metricStatus: "指标状态",
   },
 } as const;
 

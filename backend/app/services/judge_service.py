@@ -1,8 +1,7 @@
 import json
 
-from pydantic import ValidationError
-
-from backend.app.data.schemas import EpisodeRecord, EpisodeResult, JudgeScores, ProviderConfig
+from backend.app.data.schemas import EpisodeRecord, EpisodeResult, ProviderConfig
+from backend.app.services.judge_normalizer import load_judge_payload, normalize_judge_scores
 from backend.app.services.provider_adapter import ProviderError, chat_completion
 
 
@@ -10,11 +9,20 @@ def build_judge_messages(episode: EpisodeRecord, result: EpisodeResult) -> list[
     trajectory = [turn.model_dump() for turn in result.generated_trajectory]
     evaluator_context = episode.lcs.ecs.model_dump()
     rubric = (
-        "Score each field from 0 to 100. Higher is better. "
+        "Evaluate learner realism using the Stu-Bench paper metrics. "
+        "Return only JSON. Score these 0-100 fields: overall_realism, "
+        "initial_state_fidelity, mistake_authenticity, scaffolding_uptake, "
+        "kc_transition_consistency, learning_trajectory_plausibility, "
+        "over_competence_control. Higher is better for all displayed scores; "
         "over_competence_control is higher when the model avoids expert-like leaps. "
-        "Return only JSON matching the requested keys, including formula_metrics. "
-        "Set formula_metrics.status to judge_estimated unless reliable structured annotations "
-        "support computed metrics; use pending_annotation when no estimate is justified."
+        "Also return formula_metrics with kts, uptake, over_improve, and status. "
+        "Use KTS = 1 - mean absolute delta difference between LLM and human KC transitions, "
+        "Uptake = mean I(u_t=1) over scaffold turns, and OverImprove = mean I(o_t=1) "
+        "over scaffold turns. kts, uptake, and over_improve must be ratios in [0,1]. "
+        "Set formula_metrics.status to computed only when these values are computed from "
+        "structured annotations; otherwise use judge_estimated for LLM-as-judge estimates "
+        "or pending_annotation when no estimate is justified. Include judge_rationale and "
+        "failure_flags."
     )
     return [
         {
@@ -45,7 +53,7 @@ async def judge_episode(
         return result
     try:
         text = await chat_completion(judge_provider, build_judge_messages(episode, result))
-        scores = JudgeScores.model_validate(json.loads(text))
+        scores = normalize_judge_scores(load_judge_payload(text))
         return result.model_copy(update={"judge_scores": scores})
-    except (ProviderError, json.JSONDecodeError, ValidationError) as exc:
+    except (ProviderError, json.JSONDecodeError, ValueError) as exc:
         return result.model_copy(update={"status": "failed", "error_message": f"Judge failed: {exc}"})

@@ -118,6 +118,12 @@ beforeEach(() => {
         judge_scores: {
           overall_realism: 78,
           judge_rationale: "Mock judge rationale",
+          formula_metrics: {
+            kts: 0.72,
+            uptake: 0.8,
+            over_improve: 0.17,
+            status: "judge_estimated",
+          },
         },
       };
       const secondResult = {
@@ -133,6 +139,12 @@ beforeEach(() => {
         judge_scores: {
           overall_realism: 91,
           judge_rationale: "Second judge rationale",
+          formula_metrics: {
+            kts: 0.88,
+            uptake: 0.9,
+            over_improve: 0.09,
+            status: "judge_estimated",
+          },
         },
       };
       if (lastRunEpisodeIds.length > 1) {
@@ -223,6 +235,12 @@ beforeEach(() => {
                     judge_scores: {
                       overall_realism: 78,
                       judge_rationale: "Mock judge rationale",
+                      formula_metrics: {
+                        kts: 0.72,
+                        uptake: 0.8,
+                        over_improve: 0.17,
+                        status: "judge_estimated",
+                      },
                     },
                   },
                   {
@@ -238,6 +256,12 @@ beforeEach(() => {
                     judge_scores: {
                       overall_realism: 91,
                       judge_rationale: "Second judge rationale",
+                      formula_metrics: {
+                        kts: 0.88,
+                        uptake: 0.9,
+                        over_improve: 0.09,
+                        status: "judge_estimated",
+                      },
                     },
                   },
                 ]
@@ -255,6 +279,12 @@ beforeEach(() => {
                     judge_scores: {
                       overall_realism: 78,
                       judge_rationale: "Mock judge rationale",
+                      formula_metrics: {
+                        kts: 0.72,
+                        uptake: 0.8,
+                        over_improve: 0.17,
+                        status: "judge_estimated",
+                      },
                     },
                   },
                 ],
@@ -303,6 +333,10 @@ test("runs the selected mock episode and renders trajectory and scores", async (
   );
   expect(screen.getByText("Mock judge rationale")).toBeInTheDocument();
   expect(screen.getByText("78")).toBeInTheDocument();
+  expect(screen.getByText("KTS")).toBeInTheDocument();
+  expect(screen.getByText("0.72")).toBeInTheDocument();
+  expect(screen.getByText("OverImprove")).toBeInTheDocument();
+  expect(screen.getByText("0.17")).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Export CSV" })).toHaveAttribute(
     "href",
     "http://localhost:8000/api/runs/run-demo/export.csv",
