@@ -23,6 +23,7 @@ export interface RunStatus {
   total: number;
   completed: number;
   current_episode_id?: string | null;
+  results?: EpisodeRunResult[];
   error_message?: string | null;
 }
 
@@ -46,17 +47,19 @@ export interface EpisodeDetail {
   };
 }
 
+export interface EpisodeRunResult {
+  episode_id: string;
+  status: "succeeded" | "failed";
+  generated_trajectory: Array<{
+    turn_index: number;
+    tutor_message: string;
+    student_response: string;
+  }>;
+  judge_scores?: Record<string, unknown>;
+  error_message?: string;
+}
+
 export interface RunPayload {
   run_id: string;
-  results: Array<{
-    episode_id: string;
-    status: "succeeded" | "failed";
-    generated_trajectory: Array<{
-      turn_index: number;
-      tutor_message: string;
-      student_response: string;
-    }>;
-    judge_scores?: Record<string, unknown>;
-    error_message?: string;
-  }>;
+  results: EpisodeRunResult[];
 }

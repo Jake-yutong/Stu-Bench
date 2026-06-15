@@ -1,18 +1,18 @@
-import type { RunPayload } from "../lib/types";
+import type { EpisodeRunResult } from "../lib/types";
 import { apiDownloadUrl } from "../lib/api";
 import { ScoreGrid } from "./ScoreGrid";
 import type { WorkbenchCopy } from "../lib/i18n";
 
 export function ResultsPanel({
-  run,
+  result,
   runId,
   labels,
 }: {
-  run: RunPayload | null;
+  result: EpisodeRunResult | null;
   runId: string | null;
   labels?: WorkbenchCopy;
 }) {
-  const scores = run?.results[0]?.judge_scores ?? null;
+  const scores = result?.judge_scores ?? null;
   const scoreLabels = labels
     ? [
         labels.scoreOverall,

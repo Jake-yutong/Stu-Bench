@@ -1,14 +1,17 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
 import Page from "../app/page";
 
 let providerTestBodies: Array<Record<string, unknown>> = [];
 let runBodies: Array<Record<string, unknown>> = [];
+let releaseRunCompletion: (() => void) | null = null;
 
 beforeEach(() => {
   let eventsCalls = 0;
+  let lastRunEpisodeIds: string[] = ["demo-001"];
+  releaseRunCompletion = null;
   providerTestBodies = [];
   runBodies = [];
   global.fetch = vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
@@ -81,12 +84,14 @@ beforeEach(() => {
       );
     }
     if (textUrl.endsWith("/api/runs")) {
-      runBodies.push(JSON.parse(String(init?.body)));
+      const runBody = JSON.parse(String(init?.body));
+      runBodies.push(runBody);
+      lastRunEpisodeIds = runBody.episode_ids as string[];
       return new Response(
         JSON.stringify({
           run_id: "run-demo",
           status: "queued",
-          total: 1,
+          total: lastRunEpisodeIds.length,
           completed: 0,
         }),
         { status: 200 },
@@ -100,6 +105,81 @@ beforeEach(() => {
     }
     if (textUrl.endsWith("/api/runs/run-demo/events")) {
       eventsCalls += 1;
+      const firstResult = {
+        episode_id: "demo-001",
+        status: "succeeded",
+        generated_trajectory: [
+          {
+            turn_index: 1,
+            tutor_message: "Tutor hint",
+            student_response: "I would inspect the next digit.",
+          },
+        ],
+        judge_scores: {
+          overall_realism: 78,
+          judge_rationale: "Mock judge rationale",
+        },
+      };
+      const secondResult = {
+        episode_id: "demo-002",
+        status: "succeeded",
+        generated_trajectory: [
+          {
+            turn_index: 1,
+            tutor_message: "Tutor hint for rounding",
+            student_response: "I would round to the nearest ten.",
+          },
+        ],
+        judge_scores: {
+          overall_realism: 91,
+          judge_rationale: "Second judge rationale",
+        },
+      };
+      if (lastRunEpisodeIds.length > 1) {
+        if (eventsCalls === 1) {
+          return new Response(
+            JSON.stringify({
+              run_id: "run-demo",
+              status: "running",
+              total: 2,
+              completed: 0,
+              current_episode_id: "demo-001",
+              results: [],
+            }),
+            { status: 200 },
+          );
+        }
+        if (eventsCalls === 2) {
+          return new Response(
+            JSON.stringify({
+              run_id: "run-demo",
+              status: "running",
+              total: 2,
+              completed: 1,
+              current_episode_id: "demo-002",
+              results: [firstResult],
+            }),
+            { status: 200 },
+          );
+        }
+
+        return new Promise<Response>((resolve) => {
+          releaseRunCompletion = () =>
+            resolve(
+              new Response(
+                JSON.stringify({
+                  run_id: "run-demo",
+                  status: "completed",
+                  total: 2,
+                  completed: 2,
+                  current_episode_id: null,
+                  results: [firstResult, secondResult],
+                }),
+                { status: 200 },
+              ),
+            );
+        });
+      }
       return new Response(
         JSON.stringify(
           eventsCalls === 1
@@ -109,6 +189,7 @@ beforeEach(() => {
                 total: 1,
                 completed: 0,
                 current_episode_id: "demo-001",
+                results: [],
               }
             : {
                 run_id: "run-demo",
@@ -116,6 +197,7 @@ beforeEach(() => {
                 total: 1,
                 completed: 1,
                 current_episode_id: null,
+                results: [firstResult],
               },
         ),
         { status: 200 },
@@ -125,23 +207,57 @@ beforeEach(() => {
       return new Response(
         JSON.stringify({
           run_id: "run-demo",
-          results: [
-            {
-              episode_id: "demo-001",
-              status: "succeeded",
-              generated_trajectory: [
-                {
-                  turn_index: 1,
-                  tutor_message: "Tutor hint",
-                  student_response: "I would inspect the next digit.",
-                },
-              ],
-              judge_scores: {
-                overall_realism: 78,
-                judge_rationale: "Mock judge rationale",
-              },
-            },
-          ],
+          results:
+            lastRunEpisodeIds.length > 1
+              ? [
+                  {
+                    episode_id: "demo-001",
+                    status: "succeeded",
+                    generated_trajectory: [
+                      {
+                        turn_index: 1,
+                        tutor_message: "Tutor hint",
+                        student_response: "I would inspect the next digit.",
+                      },
+                    ],
+                    judge_scores: {
+                      overall_realism: 78,
+                      judge_rationale: "Mock judge rationale",
+                    },
+                  },
+                  {
+                    episode_id: "demo-002",
+                    status: "succeeded",
+                    generated_trajectory: [
+                      {
+                        turn_index: 1,
+                        tutor_message: "Tutor hint for rounding",
+                        student_response: "I would round to the nearest ten.",
+                      },
+                    ],
+                    judge_scores: {
+                      overall_realism: 91,
+                      judge_rationale: "Second judge rationale",
+                    },
+                  },
+                ]
+              : [
+                  {
+                    episode_id: "demo-001",
+                    status: "succeeded",
+                    generated_trajectory: [
+                      {
+                        turn_index: 1,
+                        tutor_message: "Tutor hint",
+                        student_response: "I would inspect the next digit.",
+                      },
+                    ],
+                    judge_scores: {
+                      overall_realism: 78,
+                      judge_rationale: "Mock judge rationale",
+                    },
+                  },
+                ],
         }),
         { status: 200 },
       );
@@ -151,8 +267,15 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   cleanup();
 });
+
+async function flushAsyncWork() {
+  await act(async () => {
+    await Promise.resolve();
+  });
+}
 
 
 test("loads episode summaries from the backend", async () => {
@@ -266,4 +389,43 @@ test("formats latex-heavy question text for display", async () => {
   expect(screen.queryByText(/\\\(/)).not.toBeInTheDocument();
   expect(screen.getByText("A. 38")).toBeInTheDocument();
   expect(screen.getByText("B. 11/16")).toBeInTheDocument();
+});
+
+
+test("streams multi-episode progress and displays the active result scores", async () => {
+  render(<Page />);
+  await waitFor(() => expect(screen.getByText("x 0 1 2")).toBeInTheDocument());
+
+  vi.useFakeTimers();
+  await act(async () => {
+    fireEvent.change(screen.getByLabelText("Test count"), { target: { value: "2" } });
+    fireEvent.click(screen.getByRole("button", { name: "Run selected" }));
+  });
+  await flushAsyncWork();
+
+  expect(screen.getByText("running: 0/2")).toBeInTheDocument();
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1000);
+  });
+  await flushAsyncWork();
+
+  expect(screen.getByText("running: 1/2")).toBeInTheDocument();
+  expect(screen.getAllByText("Rounding question").length).toBeGreaterThan(0);
+  expect(screen.getByText("Student: I would inspect the next digit.")).toBeInTheDocument();
+  expect(screen.getByText("Mock judge rationale")).toBeInTheDocument();
+  expect(screen.getByText("78")).toBeInTheDocument();
+
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1000);
+  });
+  expect(releaseRunCompletion).toBeTruthy();
+  await act(async () => {
+    releaseRunCompletion?.();
+  });
+  await flushAsyncWork();
+
+  expect(screen.getByText("completed: 2/2")).toBeInTheDocument();
+  expect(screen.getByText("Student: I would round to the nearest ten.")).toBeInTheDocument();
+  expect(screen.getByText("Second judge rationale")).toBeInTheDocument();
+  expect(screen.getByText("91")).toBeInTheDocument();
 });

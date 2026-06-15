@@ -12,6 +12,7 @@ import { formatMathText } from "../lib/formatMathText";
 import { copy, type Language } from "../lib/i18n";
 import type {
   EpisodeDetail,
+  EpisodeRunResult,
   EpisodeSummary,
   ProviderConfig,
   ProviderTestResponse,
@@ -20,7 +21,7 @@ import type {
   TestMode,
 } from "../lib/types";
 
-const POLL_INTERVAL_MS = 250;
+const POLL_INTERVAL_MS = 1000;
 
 const mockProvider: ProviderConfig = {
   preset: "mock",
@@ -106,9 +107,22 @@ export function EpisodeWorkbench() {
     return episodes.slice(0, Math.min(testCount, episodes.length)).map((item) => item.episode_id);
   }
 
+  function updateRunFromStatus(status: RunStatus) {
+    setRunStatus(status);
+    if (status.results) {
+      setRun({ run_id: status.run_id, results: status.results });
+    }
+
+    const latestResult = status.results?.[status.results.length - 1] ?? null;
+    const displayEpisodeId = status.current_episode_id ?? latestResult?.episode_id;
+    if (displayEpisodeId) {
+      setActiveEpisodeId(displayEpisodeId);
+    }
+  }
+
   async function pollRun(nextRunId: string) {
     const status = await apiGet<RunStatus>(`/api/runs/${nextRunId}/events`);
-    setRunStatus(status);
+    updateRunFromStatus(status);
 
     if (status.status === "failed") {
       setRunError(status.error_message ?? "Run failed.");
@@ -119,6 +133,10 @@ export function EpisodeWorkbench() {
     if (status.status === "completed") {
       const payload = await apiGet<RunPayload>(`/api/runs/${nextRunId}`);
       setRun(payload);
+      const latestResult = payload.results[payload.results.length - 1];
+      if (latestResult) {
+        setActiveEpisodeId(latestResult.episode_id);
+      }
       setIsRunning(false);
       return;
     }
@@ -144,7 +162,7 @@ export function EpisodeWorkbench() {
         episode_ids: episodeIds,
       });
       setRunId(status.run_id);
-      setRunStatus(status);
+      updateRunFromStatus(status);
       void pollRun(status.run_id);
     } catch (error) {
       setRunError(error instanceof Error ? error.message : "Run request failed.");
@@ -178,6 +196,9 @@ export function EpisodeWorkbench() {
   const runStatusText = runStatus
     ? `${runStatus.status}: ${runStatus.completed}/${runStatus.total}`
     : t.idleStatus;
+  const latestResult = run?.results?.[run.results.length - 1] ?? null;
+  const activeResult: EpisodeRunResult | null =
+    run?.results?.find((result) => result.episode_id === activeEpisodeId) ?? latestResult;
 
   return (
     <main className="workbench">
@@ -331,7 +352,7 @@ export function EpisodeWorkbench() {
             </div>
           </div>
           <DialogueTimeline
-            turns={run?.results?.[0]?.generated_trajectory ?? []}
+            turns={activeResult?.generated_trajectory ?? []}
             labels={{
               ariaLabel: t.dialogueTimeline,
               emptyTutor: t.emptyTutor,
@@ -341,7 +362,7 @@ export function EpisodeWorkbench() {
             }}
           />
         </section>
-        <ResultsPanel run={run} runId={runId} labels={t} />
+        <ResultsPanel result={activeResult} runId={runId} labels={t} />
       </section>
     </main>
   );

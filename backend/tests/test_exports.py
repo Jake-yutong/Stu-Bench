@@ -38,6 +38,8 @@ def test_create_run_and_export_json_and_csv(tmp_path, monkeypatch):
     assert events_payload["status"] == "completed"
     assert events_payload["completed"] == 1
     assert events_payload["total"] == 1
+    assert events_payload["results"][0]["status"] == "succeeded"
+    assert events_payload["results"][0]["judge_scores"]["overall_realism"] == 78
 
     run_payload = client.get(f"/api/runs/{run_id}").json()
     assert run_payload["results"][0]["status"] == "succeeded"

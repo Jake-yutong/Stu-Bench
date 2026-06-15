@@ -24,6 +24,7 @@ def start_run(config: RunConfig, episodes: list[EpisodeRecord]) -> dict[str, obj
         "total": len(episodes),
         "completed": 0,
         "current_episode_id": None,
+        "results": [],
         "error_message": None,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
@@ -52,9 +53,11 @@ async def _execute_run(run_id: str, config: RunConfig, episodes: list[EpisodeRec
             judged = await judge_episode(episode, result, config.judge_provider)
             results.append(judged)
             status["completed"] = len(results)
+            status["results"] = [item.model_dump(mode="json") for item in results]
         payload = persist_run(run_id, config, results)
         status["status"] = "completed"
         status["current_episode_id"] = None
+        status["results"] = payload["results"]
         status["completed_at"] = payload["created_at"]
     except Exception as exc:  # pragma: no cover - defensive boundary for background task
         status["status"] = "failed"
