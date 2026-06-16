@@ -54,10 +54,9 @@ def _mock_response(config: ProviderConfig, messages: list[dict[str, str]]) -> st
     joined = "\n".join(message["content"] for message in messages)
     if "JSON" in joined or "judge" in config.model.lower():
         return (
-            '{"overall_realism": 78, "initial_state_fidelity": 76, '
-            '"mistake_authenticity": 74, "scaffolding_uptake": 80, '
-            '"kc_transition_consistency": 72, "learning_trajectory_plausibility": 79, '
-            '"over_competence_control": 83, "judge_rationale": "Mock judge: plausible gradual uptake.", '
+            '{"lrs": 0.78, "isf": 0.76, "ma": 0.74, "su": 0.80, '
+            '"ktc": 0.72, "occ": 0.83, '
+            '"judge_rationale": "Mock judge: plausible gradual uptake.", '
             '"failure_flags": [], "formula_metrics": {"kts": null, "uptake": null, '
             '"over_improve": null, "status": "judge_estimated"}}'
         )

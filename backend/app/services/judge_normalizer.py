@@ -6,51 +6,54 @@ from backend.app.data.schemas import FormulaMetrics, JudgeScores, MetricStatus
 
 
 SCORE_FIELDS = (
-    "overall_realism",
-    "initial_state_fidelity",
-    "mistake_authenticity",
-    "scaffolding_uptake",
-    "kc_transition_consistency",
-    "learning_trajectory_plausibility",
-    "over_competence_control",
+    "lrs",
+    "isf",
+    "ma",
+    "su",
+    "ktc",
+    "occ",
 )
 
 FIELD_ALIASES = {
-    "overall": "overall_realism",
-    "overallscore": "overall_realism",
-    "overallrealism": "overall_realism",
-    "learnerrealism": "overall_realism",
-    "learnerrealismrewardscore": "overall_realism",
-    "realism": "overall_realism",
-    "rewardscore": "overall_realism",
-    "initial": "initial_state_fidelity",
-    "initialstate": "initial_state_fidelity",
-    "initiallearnerstate": "initial_state_fidelity",
-    "initiallearnerstatefidelity": "initial_state_fidelity",
-    "initialstatefidelity": "initial_state_fidelity",
-    "mistake": "mistake_authenticity",
-    "mistakeauth": "mistake_authenticity",
-    "mistakeauthenticity": "mistake_authenticity",
-    "uptake": "scaffolding_uptake",
-    "scaffolduptake": "scaffolding_uptake",
-    "scaffoldinguptake": "scaffolding_uptake",
-    "scaffoldinguptakescore": "scaffolding_uptake",
-    "scaffoldadherence": "scaffolding_uptake",
-    "scaffoldresponsiveness": "scaffolding_uptake",
-    "uptakeevidence": "scaffolding_uptake",
-    "uptakerealism": "scaffolding_uptake",
-    "uptakerelevance": "scaffolding_uptake",
-    "kctransition": "kc_transition_consistency",
-    "kctransitionconsistency": "kc_transition_consistency",
-    "kctransitionsimilarity": "kc_transition_consistency",
-    "kts": "kc_transition_consistency",
-    "trajectory": "learning_trajectory_plausibility",
-    "learningtrajectory": "learning_trajectory_plausibility",
-    "learningtrajectoryplausibility": "learning_trajectory_plausibility",
-    "trajectoryrealism": "learning_trajectory_plausibility",
-    "overcompetence": "over_competence_control",
-    "overcompetencecontrol": "over_competence_control",
-    "overimprovementcontrol": "over_competence_control",
+    "overall": "lrs",
+    "overallscore": "lrs",
+    "overallrealism": "lrs",
+    "overallrealismrewardscore": "lrs",
+    "learnerrealism": "lrs",
+    "learnerrealismrewardscore": "lrs",
+    "learnerrealismscore": "lrs",
+    "lrs": "lrs",
+    "realism": "lrs",
+    "rewardscore": "lrs",
+    "initial": "isf",
+    "initialstate": "isf",
+    "initiallearnerstate": "isf",
+    "initiallearnerstatefidelity": "isf",
+    "initialstatefidelity": "isf",
+    "isf": "isf",
+    "mistake": "ma",
+    "mistakeauth": "ma",
+    "mistakeauthenticity": "ma",
+    "ma": "ma",
+    "uptake": "su",
+    "scaffolduptake": "su",
+    "scaffoldinguptake": "su",
+    "scaffoldinguptakescore": "su",
+    "scaffoldadherence": "su",
+    "scaffoldresponsiveness": "su",
+    "su": "su",
+    "uptakeevidence": "su",
+    "uptakerealism": "su",
+    "uptakerelevance": "su",
+    "kctransition": "ktc",
+    "kctransitionconsistency": "ktc",
+    "kctransitionsimilarity": "ktc",
+    "ktc": "ktc",
+    "kts": "ktc",
+    "occ": "occ",
+    "overcompetence": "occ",
+    "overcompetencecontrol": "occ",
+    "overimprovementcontrol": "occ",
 }
 
 FORMULA_ALIASES = {
@@ -90,34 +93,34 @@ def load_judge_payload(text: str) -> dict[str, Any]:
 def normalize_judge_scores(payload: dict[str, Any]) -> JudgeScores:
     score_source = _merge_score_sources(payload)
     formula = _normalize_formula_metrics(payload)
-    scores: dict[str, int] = {}
+    scores: dict[str, float] = {}
     flags = _string_list(payload.get("failure_flags") or payload.get("flags"))
 
     for key, value in score_source.items():
         field = _canonical_score_field(key)
         if field and value is not None and field not in scores:
-            scores[field] = _coerce_score(value)
+            scores[field] = _coerce_ratio(value)
 
-    if formula.uptake is not None and "scaffolding_uptake" not in scores:
-        scores["scaffolding_uptake"] = _ratio_to_score(formula.uptake)
-        flags.append("scaffolding_uptake_derived_from_formula")
-    if formula.kts is not None and "kc_transition_consistency" not in scores:
-        scores["kc_transition_consistency"] = _ratio_to_score(formula.kts)
-        flags.append("kc_transition_consistency_derived_from_formula")
-    if formula.over_improve is not None and "over_competence_control" not in scores:
-        scores["over_competence_control"] = _ratio_to_score(1 - formula.over_improve)
-        flags.append("over_competence_control_derived_from_formula")
+    if formula.uptake is not None and "su" not in scores:
+        scores["su"] = formula.uptake
+        flags.append("su_derived_from_uptake")
+    if formula.kts is not None and "ktc" not in scores:
+        scores["ktc"] = formula.kts
+        flags.append("ktc_derived_from_kts")
+    if formula.over_improve is not None and "occ" not in scores:
+        scores["occ"] = 1 - formula.over_improve
+        flags.append("occ_derived_from_over_improve")
 
-    if "overall_realism" not in scores:
+    if "lrs" not in scores:
         diagnostic_values = [scores[field] for field in SCORE_FIELDS[1:] if field in scores]
         if diagnostic_values:
-            scores["overall_realism"] = round(sum(diagnostic_values) / len(diagnostic_values))
-            flags.append("overall_realism_derived_from_diagnostics")
+            scores["lrs"] = round(sum(diagnostic_values) / len(diagnostic_values), 3)
+            flags.append("lrs_derived_from_diagnostics")
 
-    fallback = scores.get("overall_realism")
+    fallback = scores.get("lrs")
     for field in SCORE_FIELDS:
         if field not in scores:
-            scores[field] = fallback if fallback is not None else 50
+            scores[field] = fallback if fallback is not None else 0.5
             flags.append(f"{field}_filled_from_fallback")
 
     rationale = _first_string(
@@ -180,7 +183,7 @@ def _normalize_formula_metrics(payload: dict[str, Any]) -> FormulaMetrics:
     status_value = source.get("status") or source.get("metric_status")
     try:
         status = MetricStatus(status_value)
-    except ValueError:
+    except (TypeError, ValueError):
         status = MetricStatus.judge_estimated
     return FormulaMetrics(**formula_values, status=status)
 
@@ -200,22 +203,11 @@ def _normalize_key(key: str) -> str:
     return re.sub(r"[^a-z0-9]", "", key.lower())
 
 
-def _coerce_score(value: Any) -> int:
-    number = _coerce_number(value)
-    if 0 <= number <= 1:
-        number *= 100
-    return round(max(0, min(100, number)))
-
-
 def _coerce_ratio(value: Any) -> float:
     number = _coerce_number(value)
     if number > 1:
         number /= 100
-    return max(0.0, min(1.0, number))
-
-
-def _ratio_to_score(value: float) -> int:
-    return round(max(0, min(100, value * 100)))
+    return round(max(0.0, min(1.0, number)), 3)
 
 
 def _coerce_number(value: Any) -> float:

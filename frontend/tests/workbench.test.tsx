@@ -116,7 +116,12 @@ beforeEach(() => {
           },
         ],
         judge_scores: {
-          overall_realism: 78,
+          lrs: 0.78,
+          isf: 0.76,
+          ma: 0.74,
+          su: 0.8,
+          ktc: 0.72,
+          occ: 0.83,
           judge_rationale: "Mock judge rationale",
           formula_metrics: {
             kts: 0.72,
@@ -137,7 +142,12 @@ beforeEach(() => {
           },
         ],
         judge_scores: {
-          overall_realism: 91,
+          lrs: 0.91,
+          isf: 0.9,
+          ma: 0.88,
+          su: 0.9,
+          ktc: 0.88,
+          occ: 0.91,
           judge_rationale: "Second judge rationale",
           formula_metrics: {
             kts: 0.88,
@@ -215,6 +225,36 @@ beforeEach(() => {
         { status: 200 },
       );
     }
+    if (textUrl.endsWith("/api/runs/run-demo/export.json")) {
+      return new Response(
+        JSON.stringify({
+          run_id: "run-demo",
+          results: [
+            {
+              episode_id: "demo-001",
+              status: "succeeded",
+              generated_trajectory: [],
+              judge_scores: {
+                lrs: 0.78,
+                isf: 0.76,
+                ma: 0.74,
+                su: 0.8,
+                ktc: 0.72,
+                occ: 0.83,
+                judge_rationale: "Mock judge rationale",
+                formula_metrics: {
+                  kts: 0.72,
+                  uptake: 0.8,
+                  over_improve: 0.17,
+                  status: "judge_estimated",
+                },
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      );
+    }
     if (textUrl.endsWith("/api/runs/run-demo")) {
       return new Response(
         JSON.stringify({
@@ -233,7 +273,12 @@ beforeEach(() => {
                       },
                     ],
                     judge_scores: {
-                      overall_realism: 78,
+                      lrs: 0.78,
+                      isf: 0.76,
+                      ma: 0.74,
+                      su: 0.8,
+                      ktc: 0.72,
+                      occ: 0.83,
                       judge_rationale: "Mock judge rationale",
                       formula_metrics: {
                         kts: 0.72,
@@ -254,7 +299,12 @@ beforeEach(() => {
                       },
                     ],
                     judge_scores: {
-                      overall_realism: 91,
+                      lrs: 0.91,
+                      isf: 0.9,
+                      ma: 0.88,
+                      su: 0.9,
+                      ktc: 0.88,
+                      occ: 0.91,
                       judge_rationale: "Second judge rationale",
                       formula_metrics: {
                         kts: 0.88,
@@ -277,7 +327,12 @@ beforeEach(() => {
                       },
                     ],
                     judge_scores: {
-                      overall_realism: 78,
+                      lrs: 0.78,
+                      isf: 0.76,
+                      ma: 0.74,
+                      su: 0.8,
+                      ktc: 0.72,
+                      occ: 0.83,
                       judge_rationale: "Mock judge rationale",
                       formula_metrics: {
                         kts: 0.72,
@@ -332,19 +387,20 @@ test("runs the selected mock episode and renders trajectory and scores", async (
     expect(screen.getByText("Student: I would inspect the next digit.")).toBeInTheDocument(),
   );
   expect(screen.getByText("Mock judge rationale")).toBeInTheDocument();
-  expect(screen.getByText("78")).toBeInTheDocument();
-  expect(screen.getByText("KTS")).toBeInTheDocument();
-  expect(screen.getByText("0.72")).toBeInTheDocument();
-  expect(screen.getByText("OverImprove")).toBeInTheDocument();
-  expect(screen.getByText("0.17")).toBeInTheDocument();
+  expect(screen.getByText("LRS")).toBeInTheDocument();
+  expect(screen.getByText("0.780")).toBeInTheDocument();
+  expect(screen.getByText("OCC")).toBeInTheDocument();
+  expect(screen.queryByText("Trajectory")).not.toBeInTheDocument();
+  expect(screen.queryByText("OverImprove")).not.toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Export CSV" })).toHaveAttribute(
     "href",
     "http://localhost:8000/api/runs/run-demo/export.csv",
   );
-  expect(screen.getByRole("link", { name: "Export JSON" })).toHaveAttribute(
-    "href",
-    "http://localhost:8000/api/runs/run-demo/export.json",
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Export JSON" }));
+  await waitFor(() => expect(screen.getByRole("dialog", { name: "Export JSON" })).toBeInTheDocument());
+  expect(screen.getByText(/\"run_id\": \"run-demo\"/)).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Close" }));
+  expect(screen.queryByRole("dialog", { name: "Export JSON" })).not.toBeInTheDocument();
 });
 
 
@@ -447,7 +503,7 @@ test("streams multi-episode progress and displays the active result scores", asy
   expect(screen.getAllByText("Rounding question").length).toBeGreaterThan(0);
   expect(screen.getByText("Student: I would inspect the next digit.")).toBeInTheDocument();
   expect(screen.getByText("Mock judge rationale")).toBeInTheDocument();
-  expect(screen.getByText("78")).toBeInTheDocument();
+  expect(screen.getByText("0.780")).toBeInTheDocument();
 
   await act(async () => {
     await vi.advanceTimersByTimeAsync(1000);
@@ -461,5 +517,5 @@ test("streams multi-episode progress and displays the active result scores", asy
   expect(screen.getByText("completed: 2/2")).toBeInTheDocument();
   expect(screen.getByText("Student: I would round to the nearest ten.")).toBeInTheDocument();
   expect(screen.getByText("Second judge rationale")).toBeInTheDocument();
-  expect(screen.getByText("91")).toBeInTheDocument();
+  expect(screen.getAllByText("0.910").length).toBeGreaterThan(0);
 });

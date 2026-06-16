@@ -27,15 +27,15 @@ def _provider(model: str = "mock-judge") -> ProviderConfig:
 
 
 @pytest.mark.anyio
-async def test_judge_episode_returns_scores_on_0_to_100_scale():
+async def test_judge_episode_returns_scores_on_0_to_1_scale():
     episode = _episode()
     result = await run_episode(episode, Mode.context_engineered, _provider("mock-student"))
 
     judged = await judge_episode(episode, result, _provider())
 
     assert judged.judge_scores is not None
-    assert judged.judge_scores.overall_realism == 78
-    assert judged.judge_scores.over_competence_control == 83
+    assert judged.judge_scores.lrs == 0.78
+    assert judged.judge_scores.occ == 0.83
     assert judged.judge_scores.formula_metrics.status == "judge_estimated"
     assert judged.judge_scores.formula_metrics.uptake is None
 
@@ -51,7 +51,9 @@ async def test_build_judge_messages_include_ecs_and_generated_trajectory():
     assert episode.lcs.ecs.ground_truth_answer in prompt_text
     assert episode.lcs.ecs.real_student_trajectory[0].message in prompt_text
     assert result.generated_trajectory[0].student_response in prompt_text
-    assert "formula_metrics.status" in prompt_text
+    assert "lrs, isf, ma, su, ktc, occ" in prompt_text
+    assert "OCC = 1 - OverImprove" in prompt_text
+    assert "Learning Trajectory" not in prompt_text
 
 
 @pytest.mark.anyio
@@ -83,7 +85,6 @@ async def test_judge_episode_normalizes_real_judge_metric_payload(monkeypatch):
                     "overall": 0.62,
                     "initialLearnerStateFidelity": 71,
                     "mistakeAuthenticity": None,
-                    "learningTrajectoryPlausibility": 75,
                 },
                 "formula_metrics": {
                     "kts": 0.5,
@@ -100,11 +101,11 @@ async def test_judge_episode_normalizes_real_judge_metric_payload(monkeypatch):
 
     assert judged.status == "succeeded"
     assert judged.judge_scores is not None
-    assert judged.judge_scores.overall_realism == 62
-    assert judged.judge_scores.mistake_authenticity == 62
-    assert judged.judge_scores.scaffolding_uptake == 75
-    assert judged.judge_scores.kc_transition_consistency == 50
-    assert judged.judge_scores.over_competence_control == 75
+    assert judged.judge_scores.lrs == 0.62
+    assert judged.judge_scores.ma == 0.62
+    assert judged.judge_scores.su == 0.75
+    assert judged.judge_scores.ktc == 0.5
+    assert judged.judge_scores.occ == 0.75
     assert judged.judge_scores.judge_rationale == (
         "The simulated learner shows partial uptake but improves too quickly."
     )
@@ -119,15 +120,16 @@ def test_judge_normalizer_maps_common_llm_judge_aliases():
         {
             "learner_realism": 64,
             "uptake_relevance": 72,
-            "trajectory_realism": 81,
+            "over_improvement_control": 81,
             "judge_rationale": "Alias-heavy judge output.",
             "formula_metrics": {"status": "judge_estimated"},
         }
     )
 
-    assert scores.overall_realism == 64
-    assert scores.scaffolding_uptake == 72
-    assert scores.learning_trajectory_plausibility == 81
+    assert scores.lrs == 0.64
+    assert scores.su == 0.72
+    assert scores.occ == 0.81
+    assert not hasattr(scores, "learning_trajectory_plausibility")
 
 
 @pytest.mark.anyio

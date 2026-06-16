@@ -1,23 +1,28 @@
 const fields = [
-  "overall_realism",
-  "initial_state_fidelity",
-  "mistake_authenticity",
-  "scaffolding_uptake",
-  "kc_transition_consistency",
-  "learning_trajectory_plausibility",
-  "over_competence_control",
+  "lrs",
+  "isf",
+  "ma",
+  "su",
+  "ktc",
+  "occ",
 ] as const;
+
+function formatScore(value: unknown) {
+  if (typeof value !== "number") {
+    return "--";
+  }
+  return value.toFixed(3);
+}
 
 export function ScoreGrid({
   scores,
   labels = [
-    "Overall",
-    "Initial State",
-    "Mistake Auth.",
-    "Uptake",
-    "KC Transition",
-    "Trajectory",
-    "Over-Competence Control",
+    "LRS",
+    "ISF",
+    "MA",
+    "SU",
+    "KTC",
+    "OCC",
   ],
 }: {
   scores: Record<string, unknown> | null;
@@ -28,7 +33,7 @@ export function ScoreGrid({
       {fields.map((field, index) => (
         <div className="score-card" key={field}>
           <span>{labels[index]}</span>
-          <strong>{scores ? String(scores[field] ?? "--") : "--"}</strong>
+          <strong>{scores ? formatScore(scores[field]) : "--"}</strong>
         </div>
       ))}
     </div>

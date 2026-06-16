@@ -1,17 +1,9 @@
+import { useState } from "react";
+
 import type { EpisodeRunResult } from "../lib/types";
-import { apiDownloadUrl } from "../lib/api";
+import { apiDownloadUrl, apiGet } from "../lib/api";
 import { ScoreGrid } from "./ScoreGrid";
 import type { WorkbenchCopy } from "../lib/i18n";
-
-function formatMetricValue(value: unknown) {
-  if (value === null || value === undefined) {
-    return "--";
-  }
-  if (typeof value === "number") {
-    return Number.isInteger(value) ? String(value) : value.toFixed(2);
-  }
-  return String(value);
-}
 
 export function ResultsPanel({
   result,
@@ -23,6 +15,10 @@ export function ResultsPanel({
   labels?: WorkbenchCopy;
 }) {
   const scores = result?.judge_scores ?? null;
+  const [jsonExport, setJsonExport] = useState("");
+  const [jsonError, setJsonError] = useState("");
+  const [isJsonModalOpen, setIsJsonModalOpen] = useState(false);
+  const [isJsonLoading, setIsJsonLoading] = useState(false);
   const scoreLabels = labels
     ? [
         labels.scoreOverall,
@@ -30,33 +26,34 @@ export function ResultsPanel({
         labels.scoreMistake,
         labels.scoreUptake,
         labels.scoreKcTransition,
-        labels.scoreTrajectory,
         labels.scoreOverCompetence,
       ]
     : undefined;
-  const formulaMetrics =
-    scores?.formula_metrics && typeof scores.formula_metrics === "object"
-      ? (scores.formula_metrics as Record<string, unknown>)
-      : null;
-  const formulaCards = [
-    [labels?.metricKts ?? "KTS", formulaMetrics?.kts],
-    [labels?.metricUptake ?? "Uptake", formulaMetrics?.uptake],
-    [labels?.metricOverImprove ?? "OverImprove", formulaMetrics?.over_improve],
-    [labels?.metricStatus ?? "Status", formulaMetrics?.status],
-  ] as const;
+
+  async function openJsonExport() {
+    if (!runId) return;
+    setIsJsonModalOpen(true);
+    setIsJsonLoading(true);
+    setJsonError("");
+    try {
+      const payload = await apiGet<unknown>(`/api/runs/${runId}/export.json`);
+      setJsonExport(JSON.stringify(payload, null, 2));
+    } catch (error) {
+      setJsonExport("");
+      setJsonError(error instanceof Error ? error.message : labels?.jsonExportError ?? "Could not load JSON export.");
+    } finally {
+      setIsJsonLoading(false);
+    }
+  }
+
+  function closeJsonExport() {
+    setIsJsonModalOpen(false);
+  }
 
   return (
     <aside className="panel results-panel">
       <h2>{labels?.results ?? "Results"}</h2>
       <ScoreGrid scores={scores} labels={scoreLabels} />
-      <div className="formula-grid">
-        {formulaCards.map(([label, value]) => (
-          <div className="formula-card" key={label}>
-            <span>{label}</span>
-            <strong>{formatMetricValue(value)}</strong>
-          </div>
-        ))}
-      </div>
       <div className="rationale">
         {String(scores?.judge_rationale ?? labels?.rationalePlaceholder ?? "Judge rationale will appear here after a run.")}
       </div>
@@ -66,9 +63,9 @@ export function ResultsPanel({
             <a className="button-link" href={apiDownloadUrl(`/api/runs/${runId}/export.csv`)}>
               {labels?.exportCsv ?? "Export CSV"}
             </a>
-            <a className="button-link" href={apiDownloadUrl(`/api/runs/${runId}/export.json`)}>
+            <button type="button" onClick={openJsonExport}>
               {labels?.exportJson ?? "Export JSON"}
-            </a>
+            </button>
           </>
         ) : (
           <>
@@ -81,6 +78,23 @@ export function ResultsPanel({
           </>
         )}
       </div>
+      {isJsonModalOpen ? (
+        <div className="modal-backdrop">
+          <div className="modal" role="dialog" aria-modal="true" aria-label={labels?.jsonExportTitle ?? "Export JSON"}>
+            <div className="modal-header">
+              <h3>{labels?.jsonExportTitle ?? "Export JSON"}</h3>
+              <button type="button" onClick={closeJsonExport}>
+                {labels?.close ?? "Close"}
+              </button>
+            </div>
+            <pre className="json-export">
+              {isJsonLoading
+                ? labels?.jsonExportLoading ?? "Loading JSON export..."
+                : jsonError || jsonExport}
+            </pre>
+          </div>
+        </div>
+      ) : null}
     </aside>
   );
 }

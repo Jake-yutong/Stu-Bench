@@ -39,15 +39,17 @@ def test_create_run_and_export_json_and_csv(tmp_path, monkeypatch):
     assert events_payload["completed"] == 1
     assert events_payload["total"] == 1
     assert events_payload["results"][0]["status"] == "succeeded"
-    assert events_payload["results"][0]["judge_scores"]["overall_realism"] == 78
+    assert events_payload["results"][0]["judge_scores"]["lrs"] == 0.78
+    assert "learning_trajectory_plausibility" not in events_payload["results"][0]["judge_scores"]
 
     run_payload = client.get(f"/api/runs/{run_id}").json()
     assert run_payload["results"][0]["status"] == "succeeded"
-    assert run_payload["results"][0]["judge_scores"]["overall_realism"] == 78
+    assert run_payload["results"][0]["judge_scores"]["lrs"] == 0.78
 
     csv_response = client.get(f"/api/runs/{run_id}/export.csv")
     assert csv_response.status_code == 200
-    assert "overall_realism" in csv_response.text
+    assert "lrs,isf,ma,su,ktc,occ" in csv_response.text
+    assert "learning_trajectory_plausibility" not in csv_response.text
     assert episode_id in csv_response.text
 
     json_response = client.get(f"/api/runs/{run_id}/export.json")

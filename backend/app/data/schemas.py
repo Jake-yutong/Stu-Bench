@@ -134,13 +134,12 @@ class FormulaMetrics(StrictBaseModel):
 
 
 class JudgeScores(StrictBaseModel):
-    overall_realism: int = Field(ge=0, le=100)
-    initial_state_fidelity: int = Field(ge=0, le=100)
-    mistake_authenticity: int = Field(ge=0, le=100)
-    scaffolding_uptake: int = Field(ge=0, le=100)
-    kc_transition_consistency: int = Field(ge=0, le=100)
-    learning_trajectory_plausibility: int = Field(ge=0, le=100)
-    over_competence_control: int = Field(ge=0, le=100)
+    lrs: float = Field(ge=0.0, le=1.0)
+    isf: float = Field(ge=0.0, le=1.0)
+    ma: float = Field(ge=0.0, le=1.0)
+    su: float = Field(ge=0.0, le=1.0)
+    ktc: float = Field(ge=0.0, le=1.0)
+    occ: float = Field(ge=0.0, le=1.0)
     judge_rationale: str
     failure_flags: list[str] = Field(default_factory=list)
     formula_metrics: FormulaMetrics
