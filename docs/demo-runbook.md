@@ -64,11 +64,43 @@ After a run starts, the UI exposes CSV and JSON export links:
 - `/api/runs/{run_id}/export.csv`
 - `/api/runs/{run_id}/export.json`
 
+## Local vLLM SFT/DPO Student Models
+
+The SFT and DPO student models should run in a separate OpenAI-compatible vLLM
+server. Do not load the 8B model inside the FastAPI process.
+
+Start vLLM with the Llama base model and both LoRA adapters:
+
+```bash
+vllm serve meta-llama/Llama-3.1-8B-Instruct \
+  --host 127.0.0.1 \
+  --port 8010 \
+  --enable-lora \
+  --max-lora-rank 256 \
+  --lora-modules \
+    eedi-stud-sft-8b=/path/to/saved_models/eedi-stud-sft-8b \
+    eedi-stud-dpo-8b=/path/to/saved_models/eedi-stud-dpo-8b
+```
+
+In the workbench, choose one of these Student API providers:
+
+- `local-vllm-sft`: fills `Base URL` with `http://127.0.0.1:8010/v1` and
+  `Model` with `eedi-stud-sft-8b`.
+- `local-vllm-dpo`: fills `Base URL` with `http://127.0.0.1:8010/v1` and
+  `Model` with `eedi-stud-dpo-8b`.
+
+Keep Judge API on OpenAI, DeepSeek, Qwen, Custom, or mock. The local SFT/DPO
+presets are intended for the simulated student only.
+
 ## Research Notes
 
 The app simulates each episode turn by turn. It resets conversation history
 between episodes. SCS is never allowed to contain ground-truth answer, full real
 trajectory, or judge rubric.
+
+Demo episodes are generated from `anchored-dialogues/test.csv` only and are
+stored with `source_split: "test"` in `backend/app/data/demo_episodes.json`.
+Do not use `anchored-dialogues/train.csv` for benchmark episodes.
 
 The v1 reward model is LLM-as-judge. Formula metric fields preserve the research
 slots for KTS, uptake, and over-improvement, but `judge_estimated` values must

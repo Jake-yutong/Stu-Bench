@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { ApiConfigPanel } from "./ApiConfigPanel";
+import { ApiConfigPanel, apiProviderPresets, studentProviderPresets } from "./ApiConfigPanel";
 import { DialogueTimeline } from "./DialogueTimeline";
 import { FormattedMathText } from "./FormattedMathText";
 import { ResultsPanel } from "./ResultsPanel";
@@ -229,6 +229,7 @@ export function EpisodeWorkbench() {
             providerLabel={t.studentProvider}
             provider={studentProvider}
             onChange={setStudentProvider}
+            presets={studentProviderPresets}
             labels={{
               baseUrl: t.baseUrl,
               model: t.model,
@@ -241,6 +242,7 @@ export function EpisodeWorkbench() {
             providerLabel={t.judgeProvider}
             provider={judgeProvider}
             onChange={setJudgeProvider}
+            presets={apiProviderPresets}
             labels={{
               baseUrl: t.baseUrl,
               model: t.model,

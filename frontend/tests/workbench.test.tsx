@@ -436,6 +436,35 @@ test("uses the provider default base URL when switching presets", async () => {
 });
 
 
+test("fills local vLLM defaults for SFT and DPO student presets", async () => {
+  render(<Page />);
+  await waitFor(() => expect(screen.getByText("x 0 1 2")).toBeInTheDocument());
+
+  const studentProvider = screen.getByLabelText("Student provider");
+  const baseUrlInputs = screen.getAllByLabelText("Base URL") as HTMLInputElement[];
+  const modelInputs = screen.getAllByLabelText("Model") as HTMLInputElement[];
+
+  fireEvent.change(studentProvider, { target: { value: "local-vllm-sft" } });
+  expect(baseUrlInputs[0].value).toBe("http://127.0.0.1:8010/v1");
+  expect(modelInputs[0].value).toBe("eedi-stud-sft-8b");
+
+  fireEvent.change(studentProvider, { target: { value: "local-vllm-dpo" } });
+  expect(baseUrlInputs[0].value).toBe("http://127.0.0.1:8010/v1");
+  expect(modelInputs[0].value).toBe("eedi-stud-dpo-8b");
+
+  fireEvent.click(screen.getByRole("button", { name: "Test connections" }));
+
+  await waitFor(() => expect(providerTestBodies).toHaveLength(2));
+  expect(providerTestBodies[0]).toEqual(
+    expect.objectContaining({
+      preset: "local-vllm-dpo",
+      base_url: "http://127.0.0.1:8010/v1",
+      model: "eedi-stud-dpo-8b",
+    }),
+  );
+});
+
+
 test("sends manually selected episode ids", async () => {
   render(<Page />);
   await waitFor(() => expect(screen.getByText("x 0 1 2")).toBeInTheDocument());

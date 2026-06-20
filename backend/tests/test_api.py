@@ -1,6 +1,10 @@
+import json
+
+from backend.app.core.config import DEMO_EPISODES_PATH
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
+from backend.app.services.data_service import load_demo_episodes
 from backend.app.services.provider_adapter import ProviderError
 
 
@@ -49,6 +53,16 @@ def test_list_episodes_returns_demo_summaries():
     assert len(payload["episodes"]) >= 1
     first = payload["episodes"][0]
     assert {"episode_id", "question_id", "intervention_id", "problem_preview"} <= set(first)
+
+
+def test_demo_episodes_are_marked_as_test_split():
+    load_demo_episodes.cache_clear()
+    episodes = load_demo_episodes()
+    raw_episodes = json.loads(DEMO_EPISODES_PATH.read_text())
+
+    assert episodes
+    assert {episode["source_split"] for episode in raw_episodes} == {"test"}
+    assert {episode.source_split for episode in episodes} == {"test"}
 
 
 def test_get_episode_returns_scs_but_not_ecs_by_default():

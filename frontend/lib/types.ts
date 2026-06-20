@@ -1,4 +1,11 @@
-export type ProviderPreset = "openai" | "deepseek" | "qwen" | "custom" | "mock";
+export type ProviderPreset =
+  | "openai"
+  | "deepseek"
+  | "qwen"
+  | "custom"
+  | "local-vllm-sft"
+  | "local-vllm-dpo"
+  | "mock";
 export type TestMode = "roleplay" | "profile" | "context_engineered";
 
 export interface ProviderConfig {
@@ -31,12 +38,14 @@ export interface EpisodeSummary {
   episode_id: string;
   question_id: number;
   intervention_id: number;
+  source_split: "test" | "val" | "train";
   problem_preview: string;
   scaffold_turns: number;
 }
 
 export interface EpisodeDetail {
   episode_id: string;
+  source_split: "test" | "val" | "train";
   problem: {
     text: string;
     answer_options: Array<{ label: string; text: string }>;

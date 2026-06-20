@@ -13,6 +13,8 @@ class ProviderPreset(str, Enum):
     deepseek = "deepseek"
     qwen = "qwen"
     custom = "custom"
+    local_vllm_sft = "local-vllm-sft"
+    local_vllm_dpo = "local-vllm-dpo"
     mock = "mock"
 
 
@@ -99,6 +101,7 @@ class EpisodeRecord(StrictBaseModel):
     episode_id: str
     intervention_id: int
     question_id: int
+    source_split: Literal["test", "val", "train"] = "test"
     subject: str | None = None
     topic: str | None = None
     problem: Problem

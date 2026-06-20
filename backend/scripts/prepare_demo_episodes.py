@@ -85,6 +85,7 @@ def build_episode_record(
     dialogue_rows: pd.DataFrame,
     metadata: pd.DataFrame,
     subjects: pd.DataFrame,
+    source_split: str = "test",
 ) -> EpisodeRecord:
     intervention_id, question_id = key
     rows = dialogue_rows[
@@ -139,6 +140,7 @@ def build_episode_record(
         episode_id=f"eedi-{intervention_id}-{question_id}",
         intervention_id=intervention_id,
         question_id=question_id,
+        source_split=source_split,
         subject=subject,
         topic=topic,
         problem=Problem(text=_question_text(metadata_rows), answer_options=_answer_options(metadata_rows)),
@@ -146,12 +148,20 @@ def build_episode_record(
     )
 
 
-def prepare(input_dir: Path, output_path: Path, count: int = 20, min_turns: int = 10) -> list[EpisodeRecord]:
-    dialogues = pd.read_csv(input_dir / "anchored-dialogues" / "train.csv")
+def prepare(
+    input_dir: Path,
+    output_path: Path,
+    count: int = 20,
+    min_turns: int = 10,
+    split: str = "test",
+) -> list[EpisodeRecord]:
+    if split not in {"test", "val", "train"}:
+        raise ValueError("split must be one of: test, val, train")
+    dialogues = pd.read_csv(input_dir / "anchored-dialogues" / f"{split}.csv")
     metadata = pd.read_csv(input_dir / "dq-question-metadata.csv")
     subjects = pd.read_csv(input_dir / "dialogue-subjects.csv")
     keys = select_episode_ids(dialogues, count=count, min_turns=min_turns)
-    episodes = [build_episode_record(key, dialogues, metadata, subjects) for key in keys]
+    episodes = [build_episode_record(key, dialogues, metadata, subjects, split) for key in keys]
     if len(episodes) != count:
         raise ValueError(f"Expected {count} episodes but only found {len(episodes)} eligible")
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -165,8 +175,9 @@ def main() -> None:
     parser.add_argument("--output", required=True)
     parser.add_argument("--count", type=int, default=20)
     parser.add_argument("--min-turns", type=int, default=10)
+    parser.add_argument("--split", choices=["test", "val", "train"], default="test")
     args = parser.parse_args()
-    episodes = prepare(Path(args.input_dir), Path(args.output), args.count, args.min_turns)
+    episodes = prepare(Path(args.input_dir), Path(args.output), args.count, args.min_turns, args.split)
     print(f"Wrote {len(episodes)} episodes to {args.output}")
 
 

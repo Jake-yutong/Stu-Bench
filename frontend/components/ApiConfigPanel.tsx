@@ -5,6 +5,7 @@ interface Props {
   provider: ProviderConfig;
   onChange: (provider: ProviderConfig) => void;
   providerLabel: string;
+  presets?: readonly ProviderConfig["preset"][];
   labels: {
     baseUrl: string;
     model: string;
@@ -13,22 +14,52 @@ interface Props {
   };
 }
 
-const presets = ["openai", "deepseek", "qwen", "custom", "mock"] as const;
+export const apiProviderPresets = ["openai", "deepseek", "qwen", "custom", "mock"] as const;
+export const studentProviderPresets = [
+  "openai",
+  "deepseek",
+  "qwen",
+  "custom",
+  "local-vllm-sft",
+  "local-vllm-dpo",
+  "mock",
+] as const;
 
 const presetBaseUrls: Record<ProviderConfig["preset"], string> = {
   openai: "https://api.openai.com/v1",
   deepseek: "https://api.deepseek.com",
   qwen: "https://dashscope.aliyuncs.com/compatible-mode/v1",
   custom: "",
+  "local-vllm-sft": "http://127.0.0.1:8010/v1",
+  "local-vllm-dpo": "http://127.0.0.1:8010/v1",
   mock: "mock://local",
 };
 
-export function ApiConfigPanel({ title, provider, onChange, providerLabel, labels }: Props) {
+const presetDefaultModels: Record<ProviderConfig["preset"], string> = {
+  openai: "",
+  deepseek: "",
+  qwen: "",
+  custom: "",
+  "local-vllm-sft": "eedi-stud-sft-8b",
+  "local-vllm-dpo": "eedi-stud-dpo-8b",
+  mock: "",
+};
+
+export function ApiConfigPanel({
+  title,
+  provider,
+  onChange,
+  providerLabel,
+  presets = apiProviderPresets,
+  labels,
+}: Props) {
   function changePreset(preset: ProviderConfig["preset"]) {
+    const defaultModel = presetDefaultModels[preset];
     onChange({
       ...provider,
       preset,
       base_url: preset === "custom" ? provider.base_url : presetBaseUrls[preset],
+      model: defaultModel || provider.model,
     });
   }
 

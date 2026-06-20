@@ -83,7 +83,7 @@ def test_prepare_raises_when_not_enough_eligible_episodes(tmp_path: Path):
             {"InterventionId": 1, "QuestionId_DQ": 101, "MessageSequence": 2, "IsTutor": 0, "MessageString": "b", "TalkMovePrediction": None},
             {"InterventionId": 2, "QuestionId_DQ": 202, "MessageSequence": 1, "IsTutor": 1, "MessageString": "c", "TalkMovePrediction": "hint"},
         ]
-    ).to_csv(anchored_dir / "train.csv", index=False)
+    ).to_csv(anchored_dir / "test.csv", index=False)
     pd.DataFrame(
         [
             {"QuestionId_DQ": 202, "InterventionId": 2, "Text": "Question text", "Sequence": 1, "Label": "Question Text"},
@@ -101,3 +101,39 @@ def test_prepare_raises_when_not_enough_eligible_episodes(tmp_path: Path):
         prepare(input_dir, output_path, count=2, min_turns=2)
 
     assert not output_path.exists()
+
+
+def test_prepare_uses_test_split_by_default(tmp_path: Path):
+    input_dir = tmp_path / "dataset"
+    anchored_dir = input_dir / "anchored-dialogues"
+    anchored_dir.mkdir(parents=True)
+
+    pd.DataFrame(
+        [
+            {"InterventionId": 1, "QuestionId_DQ": 101, "MessageSequence": 1, "IsTutor": 1, "MessageString": "train tutor", "TalkMovePrediction": "hint"},
+            {"InterventionId": 1, "QuestionId_DQ": 101, "MessageSequence": 2, "IsTutor": 0, "MessageString": "train student", "TalkMovePrediction": None},
+        ]
+    ).to_csv(anchored_dir / "train.csv", index=False)
+    pd.DataFrame(
+        [
+            {"InterventionId": 2, "QuestionId_DQ": 202, "MessageSequence": 1, "IsTutor": 1, "MessageString": "test tutor", "TalkMovePrediction": "hint"},
+            {"InterventionId": 2, "QuestionId_DQ": 202, "MessageSequence": 2, "IsTutor": 0, "MessageString": "test student", "TalkMovePrediction": None},
+        ]
+    ).to_csv(anchored_dir / "test.csv", index=False)
+    pd.DataFrame(
+        [
+            {"QuestionId_DQ": 101, "InterventionId": 1, "Text": "Train question", "Sequence": 1, "Label": "Question Text"},
+            {"QuestionId_DQ": 202, "InterventionId": 2, "Text": "Test question", "Sequence": 1, "Label": "Question Text"},
+        ]
+    ).to_csv(input_dir / "dq-question-metadata.csv", index=False)
+    pd.DataFrame(
+        [
+            {"InterventionId": 1, "SubjectName": "Number", "SubjectLevel": 1, "SubjectType": "Subject"},
+            {"InterventionId": 2, "SubjectName": "Algebra", "SubjectLevel": 1, "SubjectType": "Subject"},
+        ]
+    ).to_csv(input_dir / "dialogue-subjects.csv", index=False)
+
+    episodes = prepare(input_dir, tmp_path / "out.json", count=1, min_turns=2)
+
+    assert episodes[0].episode_id == "eedi-2-202"
+    assert episodes[0].problem.text == "Test question"

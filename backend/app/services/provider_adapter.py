@@ -12,7 +12,22 @@ def provider_base_url(preset: ProviderPreset) -> str:
         ProviderPreset.openai: "https://api.openai.com/v1",
         ProviderPreset.deepseek: "https://api.deepseek.com",
         ProviderPreset.qwen: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        ProviderPreset.local_vllm_sft: "http://127.0.0.1:8010/v1",
+        ProviderPreset.local_vllm_dpo: "http://127.0.0.1:8010/v1",
         ProviderPreset.mock: "mock://local",
+        ProviderPreset.custom: "",
+    }
+    return defaults[preset]
+
+
+def provider_default_model(preset: ProviderPreset) -> str:
+    defaults = {
+        ProviderPreset.openai: "",
+        ProviderPreset.deepseek: "",
+        ProviderPreset.qwen: "",
+        ProviderPreset.local_vllm_sft: "eedi-stud-sft-8b",
+        ProviderPreset.local_vllm_dpo: "eedi-stud-dpo-8b",
+        ProviderPreset.mock: "mock-student",
         ProviderPreset.custom: "",
     }
     return defaults[preset]
@@ -25,7 +40,7 @@ async def chat_completion(config: ProviderConfig, messages: list[dict[str, str]]
     url = config.base_url.rstrip("/") + "/chat/completions"
     headers = {"Authorization": f"Bearer {config.api_key}", "Content-Type": "application/json"}
     payload = {
-        "model": config.model,
+        "model": config.model or provider_default_model(config.preset),
         "messages": messages,
         "temperature": config.temperature,
         "max_tokens": 600,

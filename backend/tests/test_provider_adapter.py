@@ -2,13 +2,25 @@ import pytest
 import httpx
 
 from backend.app.data.schemas import ProviderConfig, ProviderPreset
-from backend.app.services.provider_adapter import ProviderError, chat_completion, provider_base_url
+from backend.app.services.provider_adapter import (
+    ProviderError,
+    chat_completion,
+    provider_base_url,
+    provider_default_model,
+)
 
 
 def test_provider_presets_resolve_base_urls():
     assert provider_base_url(ProviderPreset.openai) == "https://api.openai.com/v1"
     assert provider_base_url(ProviderPreset.deepseek) == "https://api.deepseek.com"
     assert provider_base_url(ProviderPreset.qwen) == "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    assert provider_base_url(ProviderPreset.local_vllm_sft) == "http://127.0.0.1:8010/v1"
+    assert provider_base_url(ProviderPreset.local_vllm_dpo) == "http://127.0.0.1:8010/v1"
+
+
+def test_local_vllm_presets_resolve_adapter_model_names():
+    assert provider_default_model(ProviderPreset.local_vllm_sft) == "eedi-stud-sft-8b"
+    assert provider_default_model(ProviderPreset.local_vllm_dpo) == "eedi-stud-dpo-8b"
 
 
 @pytest.mark.anyio
@@ -22,6 +34,49 @@ async def test_mock_provider_returns_deterministic_student_text():
     )
     text = await chat_completion(config, [{"role": "user", "content": "Tutor message: Try rounding."}])
     assert "I think" in text
+
+
+@pytest.mark.anyio
+async def test_local_vllm_provider_uses_openai_compatible_chat_endpoint(monkeypatch):
+    config = ProviderConfig(
+        preset=ProviderPreset.local_vllm_dpo,
+        base_url="http://127.0.0.1:8010/v1",
+        api_key="local",
+        model="eedi-stud-dpo-8b",
+        temperature=0.6,
+    )
+    captured: dict[str, object] = {}
+
+    class FakeResponse:
+        status_code = 200
+
+        def json(self):
+            return {"choices": [{"message": {"content": "local dpo student reply"}}]}
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            captured["timeout"] = kwargs.get("timeout")
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def post(self, url, headers, json):
+            captured["url"] = url
+            captured["headers"] = headers
+            captured["json"] = json
+            return FakeResponse()
+
+    monkeypatch.setattr("backend.app.services.provider_adapter.httpx.AsyncClient", FakeClient)
+
+    text = await chat_completion(config, [{"role": "user", "content": "Tutor message"}])
+
+    assert text == "local dpo student reply"
+    assert captured["url"] == "http://127.0.0.1:8010/v1/chat/completions"
+    assert captured["json"]["model"] == "eedi-stud-dpo-8b"
+    assert captured["json"]["temperature"] == 0.6
 
 
 @pytest.mark.anyio
