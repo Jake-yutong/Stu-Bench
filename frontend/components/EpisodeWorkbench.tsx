@@ -11,9 +11,11 @@ import { apiGet, apiPost } from "../lib/api";
 import { formatMathText } from "../lib/formatMathText";
 import { copy, type Language } from "../lib/i18n";
 import type {
+  DatasetSummary,
   EpisodeDetail,
   EpisodeRunResult,
   EpisodeSummary,
+  MetricStatus,
   ProviderConfig,
   ProviderTestResponse,
   RunPayload,
@@ -41,6 +43,7 @@ export function EpisodeWorkbench() {
   });
   const [mode, setMode] = useState<TestMode>("context_engineered");
   const [episodes, setEpisodes] = useState<EpisodeSummary[]>([]);
+  const [datasetSummary, setDatasetSummary] = useState<DatasetSummary | null>(null);
   const [selectedEpisodeIds, setSelectedEpisodeIds] = useState<string[]>([]);
   const [activeEpisodeId, setActiveEpisodeId] = useState("");
   const [testCount, setTestCount] = useState(1);
@@ -64,6 +67,7 @@ export function EpisodeWorkbench() {
         setTestCount(1);
       }
     });
+    apiGet<DatasetSummary>("/api/dataset").then(setDatasetSummary);
   }, []);
 
   useEffect(() => {
@@ -199,6 +203,12 @@ export function EpisodeWorkbench() {
   const latestResult = run?.results?.[run.results.length - 1] ?? null;
   const activeResult: EpisodeRunResult | null =
     run?.results?.find((result) => result.episode_id === activeEpisodeId) ?? latestResult;
+  const statusLabel = (status: MetricStatus) =>
+    ({
+      computed: t.metricComputed,
+      judge_estimated: t.metricJudgeEstimated,
+      pending_annotation: t.metricPendingAnnotation,
+    })[status];
 
   return (
     <main className="workbench">
@@ -262,6 +272,39 @@ export function EpisodeWorkbench() {
               <option value="context_engineered">{t.contextEngineered}</option>
             </select>
           </label>
+          <section className="dataset-status" aria-label={t.datasetStatus}>
+            <h2>{t.datasetStatus}</h2>
+            <dl>
+              <div>
+                <dt>{t.officialSplit}</dt>
+                <dd>{datasetSummary?.official_split ?? "--"}</dd>
+              </div>
+              <div>
+                <dt>{t.officialEpisodes}</dt>
+                <dd>
+                  {datasetSummary
+                    ? `${datasetSummary.episode_count} / ${datasetSummary.unique_questions}`
+                    : "--"}
+                </dd>
+              </div>
+              <div>
+                <dt>{t.annotationSchema}</dt>
+                <dd>{datasetSummary?.annotation_schema.annotation_version ?? "--"}</dd>
+              </div>
+              <div>
+                <dt>{t.goldProvenance}</dt>
+                <dd>{datasetSummary?.annotation_schema.gold_provenance_values.join(", ") ?? "--"}</dd>
+              </div>
+            </dl>
+            <div className="metric-status-list" aria-label={t.metricStatus}>
+              {datasetSummary?.metric_statuses.slice(0, 6).map((item) => (
+                <div className="metric-status-row" key={item.metric_id}>
+                  <span>{item.metric_id.toUpperCase()}</span>
+                  <strong>{statusLabel(item.current_status)}</strong>
+                </div>
+              )) ?? <div className="metric-status-row">--</div>}
+            </div>
+          </section>
           <label>
             {t.testCount}
             <input

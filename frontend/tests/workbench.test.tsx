@@ -46,6 +46,67 @@ beforeEach(() => {
         { status: 200 },
       );
     }
+    if (textUrl.endsWith("/api/dataset")) {
+      return new Response(
+        JSON.stringify({
+          official_split: "anchored-dialogues/test.csv",
+          episode_count: 395,
+          unique_questions: 324,
+          subject_distribution: {
+            Number: 237,
+            Algebra: 69,
+          },
+          length_distribution: {
+            short_20_25: 101,
+            medium_26_35: 168,
+          },
+          annotation_schema: {
+            title: "Stu-Bench Annotation Schema v0.1",
+            annotation_version: "v0.1",
+            gold_provenance_values: ["human_verified", "adjudicated"],
+          },
+          metric_statuses: [
+            {
+              metric_id: "lrs",
+              display_name: "Learner Realism Score",
+              current_status: "judge_estimated",
+              computed_when: "Validated evaluator exists.",
+            },
+            {
+              metric_id: "isf",
+              display_name: "Initial State Fidelity",
+              current_status: "judge_estimated",
+              computed_when: "Human-verified initial learner state is available.",
+            },
+            {
+              metric_id: "ma",
+              display_name: "Mistake Authenticity",
+              current_status: "judge_estimated",
+              computed_when: "Human-verified misconception labels are available.",
+            },
+            {
+              metric_id: "su",
+              display_name: "Scaffolding Uptake",
+              current_status: "judge_estimated",
+              computed_when: "Human-verified uptake labels are available.",
+            },
+            {
+              metric_id: "ktc",
+              display_name: "KC Transition Consistency",
+              current_status: "judge_estimated",
+              computed_when: "Human-verified KC transitions are available.",
+            },
+            {
+              metric_id: "occ",
+              display_name: "Over-Competence Control",
+              current_status: "judge_estimated",
+              computed_when: "Human-verified over-improvement labels are available.",
+            },
+          ],
+        }),
+        { status: 200 },
+      );
+    }
     if (textUrl.endsWith("/api/episodes/demo-001")) {
       return new Response(
         JSON.stringify({
@@ -372,6 +433,9 @@ test("loads episode summaries from the backend", async () => {
   expect(screen.getAllByText("Episode").length).toBeGreaterThan(0);
   expect(screen.getByText("Results")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Run selected" })).toBeInTheDocument();
+  await waitFor(() => expect(screen.getByText("anchored-dialogues/test.csv")).toBeInTheDocument());
+  expect(screen.getByText("395 / 324")).toBeInTheDocument();
+  expect(screen.getAllByText("judge estimated").length).toBeGreaterThan(0);
   await waitFor(() => expect(screen.getByText("x 0 1 2")).toBeInTheDocument());
 });
 
@@ -387,9 +451,9 @@ test("runs the selected mock episode and renders trajectory and scores", async (
     expect(screen.getByText("Student: I would inspect the next digit.")).toBeInTheDocument(),
   );
   expect(screen.getByText("Mock judge rationale")).toBeInTheDocument();
-  expect(screen.getByText("LRS")).toBeInTheDocument();
+  expect(screen.getAllByText("LRS").length).toBeGreaterThan(0);
   expect(screen.getByText("0.780")).toBeInTheDocument();
-  expect(screen.getByText("OCC")).toBeInTheDocument();
+  expect(screen.getAllByText("OCC").length).toBeGreaterThan(0);
   expect(screen.queryByText("Trajectory")).not.toBeInTheDocument();
   expect(screen.queryByText("OverImprove")).not.toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Export CSV" })).toHaveAttribute(

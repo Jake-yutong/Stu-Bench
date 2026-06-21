@@ -7,6 +7,7 @@ export type ProviderPreset =
   | "local-vllm-dpo"
   | "mock";
 export type TestMode = "roleplay" | "profile" | "context_engineered";
+export type MetricStatus = "computed" | "judge_estimated" | "pending_annotation";
 
 export interface ProviderConfig {
   preset: ProviderPreset;
@@ -41,6 +42,27 @@ export interface EpisodeSummary {
   source_split: "test" | "val" | "train";
   problem_preview: string;
   scaffold_turns: number;
+}
+
+export interface MetricStatusInfo {
+  metric_id: string;
+  display_name: string;
+  current_status: MetricStatus;
+  computed_when: string;
+}
+
+export interface DatasetSummary {
+  official_split: string;
+  episode_count: number;
+  unique_questions: number;
+  subject_distribution: Record<string, number>;
+  length_distribution: Record<string, number>;
+  annotation_schema: {
+    title: string;
+    annotation_version: string;
+    gold_provenance_values: string[];
+  };
+  metric_statuses: MetricStatusInfo[];
 }
 
 export interface EpisodeDetail {

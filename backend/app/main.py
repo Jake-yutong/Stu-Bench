@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.api import episodes, providers, runs
+from backend.app.api import dataset, episodes, providers, runs
 
 app = FastAPI(title="Stu-Bench Demo API", version="0.1.0")
 
@@ -20,5 +20,6 @@ def health() -> dict[str, str]:
 
 
 app.include_router(episodes.router, prefix="/api/episodes", tags=["episodes"])
+app.include_router(dataset.router, prefix="/api/dataset", tags=["dataset"])
 app.include_router(providers.router, prefix="/api/providers", tags=["providers"])
 app.include_router(runs.router, prefix="/api/runs", tags=["runs"])

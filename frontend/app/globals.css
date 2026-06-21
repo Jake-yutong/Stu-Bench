@@ -227,6 +227,56 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
+.dataset-status {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-muted);
+  padding: 10px;
+}
+
+.dataset-status h2 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.dataset-status dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.dataset-status dl > div,
+.metric-status-row {
+  display: grid;
+  grid-template-columns: minmax(86px, 0.75fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+.dataset-status dt,
+.metric-status-row span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.dataset-status dd {
+  margin: 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.metric-status-list {
+  margin-top: 8px;
+  display: grid;
+  gap: 4px;
+}
+
+.metric-status-row strong {
+  font-size: 12px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
 .error-text {
   color: #b42318;
 }

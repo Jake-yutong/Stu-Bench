@@ -1,0 +1,393 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stu-Bench Annotation Schema v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "episode_id",
+    "annotation_version",
+    "annotator_id",
+    "provenance",
+    "problem_labels",
+    "kc_components",
+    "real_student_labels",
+    "scaffold_labels",
+    "quality_flags"
+  ],
+  "properties": {
+    "episode_id": {
+      "type": "string",
+      "pattern": "^eedi-[0-9]+-[0-9]+$"
+    },
+    "annotation_version": {
+      "type": "string",
+      "const": "v0.1"
+    },
+    "annotator_id": {
+      "type": "string"
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["raw", "auto_extracted", "llm_assisted", "human_verified", "adjudicated", "unavailable"]
+    },
+    "problem_labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["correct_answer", "problem_modality"],
+      "properties": {
+        "correct_answer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "answer_label", "answer_text", "provenance"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["available", "unknown_image_required", "unknown_incomplete_problem", "unknown_not_inferable"]
+            },
+            "answer_label": {
+              "type": ["string", "null"],
+              "enum": ["A", "B", "C", "D", null]
+            },
+            "answer_text": {
+              "type": ["string", "null"]
+            },
+            "evidence": {
+              "type": "string"
+            },
+            "provenance": {
+              "$ref": "#/$defs/provenance"
+            }
+          }
+        },
+        "problem_modality": {
+          "type": "string",
+          "enum": [
+            "text_only",
+            "requires_question_image",
+            "requires_answer_image",
+            "requires_both_question_and_answer_images",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "kc_components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kc_id", "description", "granularity", "provenance"],
+        "properties": {
+          "kc_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "granularity": {
+            "type": "string",
+            "enum": ["coarse", "medium", "fine"]
+          },
+          "source": {
+            "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/$defs/provenance"
+          }
+        }
+      }
+    },
+    "real_student_labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["initial_kc_state", "misconception_path", "kc_state_by_turn", "final_outcome"],
+      "properties": {
+        "initial_kc_state": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/kc_state_label"
+          }
+        },
+        "misconception_path": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/misconception_stage"
+          }
+        },
+        "kc_state_by_turn": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/turn_kc_state"
+          }
+        },
+        "final_outcome": {
+          "$ref": "#/$defs/final_outcome"
+        }
+      }
+    },
+    "scaffold_labels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["turn_index", "scaffold_type", "support_level", "target_kc_ids", "provenance"],
+        "properties": {
+          "turn_index": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "scaffold_type": {
+            "type": "string",
+            "enum": [
+              "greeting_or_management",
+              "questioning",
+              "hint",
+              "press_for_accuracy",
+              "press_for_reasoning",
+              "revoicing",
+              "restating",
+              "explanation",
+              "modeling",
+              "feedback",
+              "keep_together",
+              "getting_student_to_relate",
+              "other"
+            ]
+          },
+          "support_level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          },
+          "target_kc_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "provenance": {
+            "$ref": "#/$defs/provenance"
+          }
+        }
+      }
+    },
+    "generated_trajectory_labels": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/generated_turn_label"
+      }
+    },
+    "quality_flags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "needs_adjudication",
+          "image_required",
+          "incomplete_problem",
+          "low_confidence",
+          "possible_leakage",
+          "ambiguous_kc",
+          "ambiguous_uptake",
+          "ambiguous_over_improvement"
+        ]
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "string",
+      "enum": ["raw", "auto_extracted", "llm_assisted", "human_verified", "adjudicated", "unavailable"]
+    },
+    "kc_state": {
+      "type": "string",
+      "enum": ["confused", "partial", "mastered", "unknown"]
+    },
+    "kc_state_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kc_id", "state", "evidence_turns", "provenance"],
+      "properties": {
+        "kc_id": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/kc_state"
+        },
+        "evidence_turns": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "turn_kc_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["turn_index", "states"],
+      "properties": {
+        "turn_index": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/kc_state_label"
+          }
+        }
+      }
+    },
+    "misconception_stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "misconception_type", "description", "evidence_turns", "provenance"],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": ["initial", "during_scaffold", "near_final", "final"]
+        },
+        "misconception_type": {
+          "type": "string",
+          "enum": [
+            "none_observed",
+            "procedural_error",
+            "conceptual_misunderstanding",
+            "calculation_error",
+            "misread_question",
+            "notation_or_representation_confusion",
+            "strategy_selection_error",
+            "careless_or_slip",
+            "affective_or_engagement_issue",
+            "unknown"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "evidence_turns": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "final_outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["final_correctness", "final_explanation_quality", "provenance"],
+      "properties": {
+        "final_correctness": {
+          "type": "string",
+          "enum": ["correct", "incorrect", "partially_correct", "not_attempted", "unknown"]
+        },
+        "final_explanation_quality": {
+          "type": "string",
+          "enum": [
+            "none",
+            "unsupported_answer",
+            "partial_reasoning",
+            "complete_student_level_reasoning",
+            "expert_level_reasoning",
+            "unknown"
+          ]
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "generated_turn_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "turn_index",
+        "uptake",
+        "over_improvement",
+        "expert_like_language",
+        "failure_flags",
+        "provenance"
+      ],
+      "properties": {
+        "turn_index": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "uptake": {
+          "type": "string",
+          "enum": [
+            "none",
+            "mechanical_acknowledgement",
+            "relevant_attempt",
+            "partial_uptake",
+            "full_uptake",
+            "off_track",
+            "unknown"
+          ]
+        },
+        "over_improvement": {
+          "type": "string",
+          "enum": ["yes", "no", "unclear"]
+        },
+        "expert_like_language": {
+          "type": "string",
+          "enum": ["none", "mild", "strong"]
+        },
+        "failure_flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["flag", "severity", "evidence"],
+            "properties": {
+              "flag": {
+                "type": "string",
+                "enum": [
+                  "premature_mastery",
+                  "expert_like_explanation",
+                  "mechanical_agreement",
+                  "irrelevant_uptake",
+                  "under_improvement",
+                  "misconception_drift",
+                  "verbosity_mismatch",
+                  "affect_unrealism",
+                  "answer_leakage_suspected",
+                  "off_task_response",
+                  "provider_failure"
+                ]
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["minor", "moderate", "severe"]
+              },
+              "evidence": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    }
+  }
+}
