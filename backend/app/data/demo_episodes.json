@@ -895,6 +895,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -1476,6 +1482,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -2009,6 +2021,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -2532,6 +2550,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -3045,6 +3069,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -3543,6 +3573,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -4036,6 +4072,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -4524,6 +4566,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -4982,6 +5030,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -5435,6 +5489,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -5883,6 +5943,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -6311,6 +6377,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -6734,6 +6806,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -7147,6 +7225,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -7555,6 +7639,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -7963,6 +8053,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -8366,6 +8462,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -8757,6 +8859,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -9138,6 +9246,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   },
   {
@@ -9536,6 +9650,12 @@
         "uptake_evidence": "Use the real student trajectory and tutor scaffolds as reference evidence.",
         "evaluation_rubric": "Reward gradual, scaffold-linked learner realism. Penalize over-competence, irrelevant uptake, and mechanical agreement."
       }
+    },
+    "annotation_metadata": {
+      "method": "llm_generated",
+      "human_verification_status": "pending_human_verification",
+      "annotator": "stu-bench-auto-annotator-v0.1",
+      "notes": "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; paper results should describe these labels as LLM-generated or heuristic annotations pending human verification."
     }
   }
 ]

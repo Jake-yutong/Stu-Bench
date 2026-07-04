@@ -71,12 +71,13 @@ async def test_local_vllm_provider_uses_openai_compatible_chat_endpoint(monkeypa
 
     monkeypatch.setattr("backend.app.services.provider_adapter.httpx.AsyncClient", FakeClient)
 
-    text = await chat_completion(config, [{"role": "user", "content": "Tutor message"}])
+    text = await chat_completion(config, [{"role": "user", "content": "Tutor message"}], max_tokens=180)
 
     assert text == "local dpo student reply"
     assert captured["url"] == "http://127.0.0.1:8010/v1/chat/completions"
     assert captured["json"]["model"] == "eedi-stud-dpo-8b"
     assert captured["json"]["temperature"] == 0.6
+    assert captured["json"]["max_tokens"] == 180
 
 
 @pytest.mark.anyio

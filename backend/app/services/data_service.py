@@ -29,6 +29,8 @@ def list_episode_summaries() -> list[dict[str, object]]:
                 "topic": episode.topic,
                 "problem_preview": episode.problem.text[:160],
                 "scaffold_turns": len(episode.lcs.scaffold_sequence),
+                "annotation_method": episode.annotation_metadata.method,
+                "human_verification_status": episode.annotation_metadata.human_verification_status,
             }
         )
     return summaries
@@ -50,6 +52,7 @@ def public_episode_detail(episode: EpisodeRecord) -> dict[str, object]:
         "subject": episode.subject,
         "topic": episode.topic,
         "problem": episode.problem.model_dump(),
+        "annotation_metadata": episode.annotation_metadata.model_dump(),
         "lcs": {
             "kc_components": [item.model_dump() for item in episode.lcs.kc_components],
             "scaffold_sequence": [item.model_dump() for item in episode.lcs.scaffold_sequence],

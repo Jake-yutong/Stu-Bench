@@ -1,0 +1,119 @@
+{
+  "plan_id": "stu-bench-20-episode-four-condition-per-model-v0.2",
+  "source_split": "Eedi2k anchored-dialogues/test.csv",
+  "episode_count": 20,
+  "scaffold_turn_count": 160,
+  "conditions": [
+    {
+      "mode": "roleplay",
+      "label": "Roleplay Prompt",
+      "description": "Only asks the model to play a student."
+    },
+    {
+      "mode": "profile",
+      "label": "Static Profile Prompt",
+      "description": "Provides a visible learner profile and initial state, but no full SCS."
+    },
+    {
+      "mode": "context_engineered",
+      "label": "Full SCS",
+      "description": "Provides the full student-facing context set, including KC state abstraction."
+    },
+    {
+      "mode": "no_kc_scs",
+      "label": "No-KC SCS",
+      "description": "Ablates KC state abstraction from the student-facing context set."
+    }
+  ],
+  "student_model_groups": [
+    {
+      "group": "flagship",
+      "models": [
+        "qwen3.7-max",
+        "deepseek-v4-pro",
+        "glm-5.2"
+      ]
+    },
+    {
+      "group": "domain_tuned",
+      "models": [
+        "qwen-math-plus",
+        "qwen-plus-character"
+      ]
+    },
+    {
+      "group": "smaller_scale",
+      "models": [
+        "qwen3.6-35b-a3b",
+        "qwen3.6-27b"
+      ]
+    }
+  ],
+  "judge_model": {
+    "provider": "qwen",
+    "model": "qwen3.6-flash",
+    "role": "judge_estimated first-pass evaluator"
+  },
+  "metric_status": {
+    "lrs": "judge_estimated",
+    "isf": "judge_estimated",
+    "ma": "judge_estimated",
+    "su": "judge_estimated",
+    "ktc": "judge_estimated",
+    "occ": "judge_estimated",
+    "formula_kts": "pending_annotation",
+    "formula_uptake": "pending_annotation",
+    "formula_over_improve": "pending_annotation"
+  },
+  "annotation_boundary": {
+    "method": "llm_generated",
+    "human_verification_status": "pending_human_verification",
+    "paper_wording": "LLM-generated annotations with human verification planned or spot-checked; judge scores are first-pass estimates."
+  },
+  "workload": {
+    "episode_condition_pairs_per_model": 80,
+    "expected_result_files": 7,
+    "all_model_condition_episode_pairs": 560
+  },
+  "result_artifact_contract": {
+    "unit": "one JSON file per student model",
+    "results_per_file": 80,
+    "filename_pattern": "stu_bench_{student_model}_20ep_4cond.json",
+    "required_dimensions": [
+      "student_model",
+      "episode_id",
+      "mode"
+    ],
+    "expected_files": [
+      "stu_bench_qwen3.7-max_20ep_4cond.json",
+      "stu_bench_deepseek-v4-pro_20ep_4cond.json",
+      "stu_bench_glm-5.2_20ep_4cond.json",
+      "stu_bench_qwen-math-plus_20ep_4cond.json",
+      "stu_bench_qwen-plus-character_20ep_4cond.json",
+      "stu_bench_qwen3.6-35b-a3b_20ep_4cond.json",
+      "stu_bench_qwen3.6-27b_20ep_4cond.json"
+    ]
+  },
+  "episode_ids": [
+    "eedi-9442-107170",
+    "eedi-3353-130059",
+    "eedi-12363-77932",
+    "eedi-2507-129994",
+    "eedi-8049-102160",
+    "eedi-4906-77779",
+    "eedi-395-135052",
+    "eedi-11846-95781",
+    "eedi-1053-76894",
+    "eedi-6134-145985",
+    "eedi-2076-129084",
+    "eedi-2891-145985",
+    "eedi-5947-76085",
+    "eedi-3109-91697",
+    "eedi-3630-122114",
+    "eedi-3914-130243",
+    "eedi-2276-101386",
+    "eedi-11137-98500",
+    "eedi-3114-76012",
+    "eedi-5701-109757"
+  ]
+}

@@ -61,7 +61,7 @@ async def test_judge_episode_fails_when_judge_returns_invalid_json(monkeypatch):
     episode = _episode()
     result = await run_episode(episode, Mode.context_engineered, _provider("mock-student"))
 
-    async def fake_chat_completion(config, messages):
+    async def fake_chat_completion(config, messages, **kwargs):
         return "not json"
 
     monkeypatch.setattr("backend.app.services.judge_service.chat_completion", fake_chat_completion)
@@ -78,7 +78,7 @@ async def test_judge_episode_normalizes_real_judge_metric_payload(monkeypatch):
     episode = _episode()
     result = await run_episode(episode, Mode.context_engineered, _provider("mock-student"))
 
-    async def fake_chat_completion(config, messages):
+    async def fake_chat_completion(config, messages, **kwargs):
         return json.dumps(
             {
                 "scores": {
@@ -138,7 +138,7 @@ async def test_judge_episode_skips_failed_episode_result(monkeypatch):
     result = await run_episode(episode, Mode.context_engineered, _provider("mock-student"))
     failed = result.model_copy(update={"status": "failed", "error_message": "student provider failed"})
 
-    async def fake_chat_completion(config, messages):
+    async def fake_chat_completion(config, messages, **kwargs):
         raise AssertionError("judge should not be called for failed student result")
 
     monkeypatch.setattr("backend.app.services.judge_service.chat_completion", fake_chat_completion)
@@ -147,3 +147,33 @@ async def test_judge_episode_skips_failed_episode_result(monkeypatch):
 
     assert judged is failed
     assert judged.error_message == "student provider failed"
+
+
+@pytest.mark.anyio
+async def test_judge_episode_keeps_larger_judge_token_budget(monkeypatch):
+    episode = _episode()
+    result = await run_episode(episode, Mode.context_engineered, _provider("mock-student"))
+    captured_max_tokens = []
+
+    async def fake_chat_completion(config, messages, **kwargs):
+        captured_max_tokens.append(kwargs.get("max_tokens"))
+        return json.dumps(
+            {
+                "lrs": 0.7,
+                "isf": 0.7,
+                "ma": 0.7,
+                "su": 0.7,
+                "ktc": 0.7,
+                "occ": 0.7,
+                "judge_rationale": "Enough JSON budget for rationale.",
+                "failure_flags": [],
+                "formula_metrics": {"status": "judge_estimated"},
+            }
+        )
+
+    monkeypatch.setattr("backend.app.services.judge_service.chat_completion", fake_chat_completion)
+
+    judged = await judge_episode(episode, result, _provider())
+
+    assert judged.status == "succeeded"
+    assert captured_max_tokens == [500]

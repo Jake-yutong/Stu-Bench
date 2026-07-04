@@ -33,7 +33,11 @@ def provider_default_model(preset: ProviderPreset) -> str:
     return defaults[preset]
 
 
-async def chat_completion(config: ProviderConfig, messages: list[dict[str, str]]) -> str:
+async def chat_completion(
+    config: ProviderConfig,
+    messages: list[dict[str, str]],
+    max_tokens: int = 600,
+) -> str:
     if config.preset == ProviderPreset.mock:
         return _mock_response(config, messages)
 
@@ -43,13 +47,14 @@ async def chat_completion(config: ProviderConfig, messages: list[dict[str, str]]
         "model": config.model or provider_default_model(config.preset),
         "messages": messages,
         "temperature": config.temperature,
-        "max_tokens": 600,
+        "max_tokens": max_tokens,
     }
     try:
         async with httpx.AsyncClient(timeout=60) as client:
             response = await client.post(url, headers=headers, json=payload)
     except httpx.HTTPError as exc:
-        raise ProviderError(f"Provider request failed: {exc}") from exc
+        reason = str(exc) or exc.__class__.__name__
+        raise ProviderError(f"Provider request failed: {reason}") from exc
     if response.status_code >= 400:
         raise ProviderError(f"Provider returned HTTP {response.status_code}")
     try:

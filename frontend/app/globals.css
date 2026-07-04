@@ -213,6 +213,31 @@ button:disabled {
   color: var(--muted);
 }
 
+.compact-checkbox {
+  min-height: 34px;
+  background: var(--panel-muted);
+  border-color: var(--border);
+}
+
+.selection-summary,
+.result-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.result-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.result-meta strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
 .status-stack {
   min-height: 54px;
   border: 1px solid var(--border);

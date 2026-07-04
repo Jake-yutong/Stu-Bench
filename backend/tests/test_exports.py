@@ -55,6 +55,52 @@ def test_create_run_and_export_json_and_csv(tmp_path, monkeypatch):
     json_response = client.get(f"/api/runs/{run_id}/export.json")
     assert json_response.status_code == 200
     assert json_response.json()["run_id"] == run_id
+    assert json_response.json()["config"]["student_provider"]["api_key"] == "[redacted]"
+    assert json_response.json()["config"]["judge_provider"]["api_key"] == "[redacted]"
+
+
+def test_export_json_redacts_legacy_run_files(tmp_path, monkeypatch):
+    monkeypatch.setattr("backend.app.services.export_service.RUN_STORAGE_DIR", tmp_path)
+    run_manager.reset_run_state()
+    run_id = "run-legacy-secret"
+    (tmp_path / f"{run_id}.json").write_text(
+        """
+{
+  "run_id": "run-legacy-secret",
+  "created_at": "2026-07-05T00:00:00+00:00",
+  "config": {
+    "mode": "context_engineered",
+    "student_provider": {
+      "preset": "qwen",
+      "base_url": "https://example.test/v1",
+      "api_key": "sk-student-secret",
+      "model": "student",
+      "temperature": 0.2
+    },
+    "judge_provider": {
+      "preset": "qwen",
+      "base_url": "https://example.test/v1",
+      "api_key": "sk-judge-secret",
+      "model": "judge",
+      "temperature": 0.2
+    },
+    "episode_ids": ["episode-1"]
+  },
+  "results": []
+}
+""",
+        encoding="utf-8",
+    )
+
+    client = TestClient(app)
+    response = client.get(f"/api/runs/{run_id}/export.json")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert "sk-student-secret" not in response.text
+    assert "sk-judge-secret" not in response.text
+    assert payload["config"]["student_provider"]["api_key"] == "[redacted]"
+    assert payload["config"]["judge_provider"]["api_key"] == "[redacted]"
 
 
 def test_create_run_returns_404_for_unknown_episode(tmp_path, monkeypatch):

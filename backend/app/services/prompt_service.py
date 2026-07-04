@@ -68,6 +68,19 @@ def build_student_messages(
             f"Current tutor scaffold:\n{current_scaffold}\n\n"
             "Generate one student response only. Show plausible uptake only when the scaffold supports it."
         )
+    elif mode == TestMode.no_kc_scs:
+        scs = episode.lcs.scs
+        user = (
+            f"{problem}\n\n"
+            "Student-facing Context Set with KC information intentionally ablated:\n"
+            f"- Visible learner profile: {scs.visible_learner_profile}\n"
+            f"- Initial learner state: {scs.initial_learner_state}\n"
+            f"- Current confusion: {scs.current_confusion}\n"
+            f"- Language style: {scs.language_style}\n\n"
+            f"Episode history:\n{history_text}\n\n"
+            f"Current tutor scaffold:\n{current_scaffold}\n\n"
+            "Generate one student response only. Do not infer hidden KC labels or answer keys."
+        )
     else:
         raise ValueError(f"Unknown test mode: {mode!r}")
 

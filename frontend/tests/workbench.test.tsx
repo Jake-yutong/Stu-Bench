@@ -7,11 +7,13 @@ import Page from "../app/page";
 let providerTestBodies: Array<Record<string, unknown>> = [];
 let runBodies: Array<Record<string, unknown>> = [];
 let releaseRunCompletion: (() => void) | null = null;
+let simulateFailedLatestResult = false;
 
 beforeEach(() => {
   let eventsCalls = 0;
   let lastRunEpisodeIds: string[] = ["demo-001"];
   releaseRunCompletion = null;
+  simulateFailedLatestResult = false;
   providerTestBodies = [];
   runBodies = [];
   global.fetch = vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
@@ -218,6 +220,12 @@ beforeEach(() => {
           },
         },
       };
+      const failedResult = {
+        episode_id: "demo-003",
+        status: "failed",
+        generated_trajectory: [],
+        error_message: "Episode-condition timed out after 180 seconds.",
+      };
       if (lastRunEpisodeIds.length > 1) {
         if (eventsCalls === 1) {
           return new Response(
@@ -241,6 +249,19 @@ beforeEach(() => {
               completed: 1,
               current_episode_id: "demo-002",
               results: [firstResult],
+            }),
+            { status: 200 },
+          );
+        }
+        if (simulateFailedLatestResult && eventsCalls === 3) {
+          return new Response(
+            JSON.stringify({
+              run_id: "run-demo",
+              status: "running",
+              total: 3,
+              completed: 2,
+              current_episode_id: "demo-003",
+              results: [firstResult, failedResult],
             }),
             { status: 200 },
           );
@@ -463,6 +484,10 @@ test("runs the selected mock episode and renders trajectory and scores", async (
   fireEvent.click(screen.getByRole("button", { name: "Export JSON" }));
   await waitFor(() => expect(screen.getByRole("dialog", { name: "Export JSON" })).toBeInTheDocument());
   expect(screen.getByText(/\"run_id\": \"run-demo\"/)).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Download JSON" })).toHaveAttribute(
+    "href",
+    "http://localhost:8000/api/runs/run-demo/export.json",
+  );
   fireEvent.click(screen.getByRole("button", { name: "Close" }));
   expect(screen.queryByRole("dialog", { name: "Export JSON" })).not.toBeInTheDocument();
 });
@@ -542,6 +567,21 @@ test("sends manually selected episode ids", async () => {
 });
 
 
+test("selects all episodes and sends all four condition modes", async () => {
+  render(<Page />);
+  await waitFor(() => expect(screen.getByText("x 0 1 2")).toBeInTheDocument());
+
+  fireEvent.click(screen.getByRole("button", { name: "Select all episodes" }));
+  fireEvent.click(screen.getByLabelText("Run all four conditions"));
+  fireEvent.click(screen.getByRole("button", { name: "Run selected" }));
+
+  await waitFor(() => expect(runBodies).toHaveLength(1));
+  expect(runBodies[0].episode_ids).toEqual(["demo-001", "demo-002", "demo-003"]);
+  expect(runBodies[0].modes).toEqual(["roleplay", "profile", "context_engineered", "no_kc_scs"]);
+  expect(runBodies[0]).not.toHaveProperty("mode");
+});
+
+
 test("uses the first N episodes when no manual selection exists", async () => {
   render(<Page />);
   await waitFor(() => expect(screen.getByText("x 0 1 2")).toBeInTheDocument());
@@ -611,4 +651,38 @@ test("streams multi-episode progress and displays the active result scores", asy
   expect(screen.getByText("Student: I would round to the nearest ten.")).toBeInTheDocument();
   expect(screen.getByText("Second judge rationale")).toBeInTheDocument();
   expect(screen.getAllByText("0.910").length).toBeGreaterThan(0);
+});
+
+
+test("keeps the latest displayable result visible when a later condition fails", async () => {
+  simulateFailedLatestResult = true;
+  render(<Page />);
+  await waitFor(() => expect(screen.getByText("x 0 1 2")).toBeInTheDocument());
+
+  vi.useFakeTimers();
+  await act(async () => {
+    fireEvent.change(screen.getByLabelText("Test count"), { target: { value: "3" } });
+    fireEvent.click(screen.getByRole("button", { name: "Run selected" }));
+  });
+  await flushAsyncWork();
+
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1000);
+  });
+  await flushAsyncWork();
+
+  expect(screen.getByText("Student: I would inspect the next digit.")).toBeInTheDocument();
+  expect(screen.getByText("Mock judge rationale")).toBeInTheDocument();
+  expect(screen.getByText("0.780")).toBeInTheDocument();
+
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1000);
+  });
+  await flushAsyncWork();
+
+  expect(screen.getByText("running: 2/3")).toBeInTheDocument();
+  expect(screen.getByText("Student: I would inspect the next digit.")).toBeInTheDocument();
+  expect(screen.getByText("Mock judge rationale")).toBeInTheDocument();
+  expect(screen.getByText("0.780")).toBeInTheDocument();
+  expect(screen.queryByText("Judge rationale will appear here after a run.")).not.toBeInTheDocument();
 });

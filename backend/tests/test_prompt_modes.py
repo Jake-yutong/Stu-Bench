@@ -47,7 +47,7 @@ def _assert_ecs_values_absent(mode: Mode, joined: str) -> None:
         assert value not in joined, f"{mode.value} prompt leaked ECS scalar value: {value!r}"
 
 
-@pytest.mark.parametrize("mode", [Mode.roleplay, Mode.profile, Mode.context_engineered])
+@pytest.mark.parametrize("mode", [Mode.roleplay, Mode.profile, Mode.context_engineered, Mode.no_kc_scs])
 def test_prompts_exclude_evaluator_leakage(mode: Mode):
     messages = build_student_messages(_episode(), mode, [], "Tutor hint")
     joined = "\n".join(message["content"] for message in messages)
@@ -84,6 +84,16 @@ def test_context_engineered_prompt_includes_scs_and_current_scaffold():
     joined = "\n".join(message["content"] for message in messages)
     assert "Student-facing Context Set" in joined
     assert "Tutor hint" in joined
+    assert "ground_truth_answer" not in joined
+
+
+def test_no_kc_scs_prompt_includes_scs_without_kc_state():
+    messages = build_student_messages(_episode(), Mode.no_kc_scs, [], "Tutor hint")
+    joined = "\n".join(message["content"] for message in messages)
+    assert "Student-facing Context Set" in joined
+    assert "Tutor hint" in joined
+    assert "KC state abstraction" not in joined
+    assert "kc-rounding-place-value" not in joined
     assert "ground_truth_answer" not in joined
 
 

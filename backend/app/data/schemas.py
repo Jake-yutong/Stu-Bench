@@ -22,6 +22,7 @@ class TestMode(str, Enum):
     roleplay = "roleplay"
     profile = "profile"
     context_engineered = "context_engineered"
+    no_kc_scs = "no_kc_scs"
 
 
 class MetricStatus(str, Enum):
@@ -90,6 +91,22 @@ class EvaluatorFacingContext(StrictBaseModel):
     evaluation_rubric: str
 
 
+class AnnotationMetadata(StrictBaseModel):
+    method: Literal["llm_generated", "human_verified", "adjudicated"] = "llm_generated"
+    human_verification_status: Literal[
+        "pending_human_verification",
+        "spot_checked",
+        "human_verified",
+        "adjudicated",
+    ] = "pending_human_verification"
+    annotator: str = "stu-bench-auto-annotator-v0.1"
+    notes: str = (
+        "SCS/ECS fields are generated from local Eedi2k metadata and dialogue traces; "
+        "paper results should describe these labels as LLM-generated or heuristic annotations "
+        "pending human verification."
+    )
+
+
 class LearnerContextSet(StrictBaseModel):
     kc_components: list[KCComponent]
     scaffold_sequence: list[ScaffoldTurn]
@@ -106,6 +123,7 @@ class EpisodeRecord(StrictBaseModel):
     topic: str | None = None
     problem: Problem
     lcs: LearnerContextSet
+    annotation_metadata: AnnotationMetadata = Field(default_factory=AnnotationMetadata)
 
 
 class ProviderConfig(StrictBaseModel):
@@ -117,10 +135,18 @@ class ProviderConfig(StrictBaseModel):
 
 
 class RunConfig(StrictBaseModel):
-    mode: TestMode
+    mode: TestMode | None = None
+    modes: list[TestMode] | None = None
     student_provider: ProviderConfig
     judge_provider: ProviderConfig
     episode_ids: list[str]
+
+    def selected_modes(self) -> list[TestMode]:
+        if self.modes:
+            return self.modes
+        if self.mode:
+            return [self.mode]
+        return [TestMode.context_engineered]
 
 
 class GeneratedTurn(StrictBaseModel):

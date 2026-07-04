@@ -57,7 +57,7 @@ async def test_run_episode_calls_student_once_per_scaffold_turn(monkeypatch):
     episode = _two_turn_episode()
     calls = 0
 
-    async def fake_chat_completion(config, messages):
+    async def fake_chat_completion(config, messages, **kwargs):
         nonlocal calls
         calls += 1
         return f"student response {calls}"
@@ -77,7 +77,7 @@ async def test_run_episode_passes_progressive_history_into_prompts(monkeypatch):
     captured_messages = []
     responses = ["student-turn-one-marker", "student-turn-two-marker"]
 
-    async def fake_chat_completion(config, messages):
+    async def fake_chat_completion(config, messages, **kwargs):
         captured_messages.append(messages)
         return responses[len(captured_messages) - 1]
 
@@ -102,7 +102,7 @@ async def test_run_episode_starts_with_clean_history_each_time(monkeypatch):
         "second-run-second-response",
     ]
 
-    async def fake_chat_completion(config, messages):
+    async def fake_chat_completion(config, messages, **kwargs):
         captured_messages.append(messages)
         return responses[len(captured_messages) - 1]
 
@@ -122,7 +122,7 @@ async def test_run_episode_returns_failed_result_with_partial_trajectory(monkeyp
     episode = _two_turn_episode()
     calls = 0
 
-    async def fake_chat_completion(config, messages):
+    async def fake_chat_completion(config, messages, **kwargs):
         nonlocal calls
         calls += 1
         if calls == 2:
@@ -137,3 +137,37 @@ async def test_run_episode_returns_failed_result_with_partial_trajectory(monkeyp
     assert len(result.generated_trajectory) == 1
     assert result.generated_trajectory[0].turn_index == 1
     assert result.error_message == "provider stopped on turn 2"
+
+
+@pytest.mark.anyio
+async def test_run_episode_preserves_no_kc_scs_mode(monkeypatch):
+    episode = _episode()
+
+    async def fake_chat_completion(config, messages, **kwargs):
+        joined = _prompt_text(messages)
+        assert "KC state abstraction" not in joined
+        return "I am not sure yet."
+
+    monkeypatch.setattr("backend.app.services.runner.chat_completion", fake_chat_completion)
+
+    result = await run_episode(episode, Mode.no_kc_scs, _mock_provider())
+
+    assert result.status == "succeeded"
+    assert result.mode == Mode.no_kc_scs
+
+
+@pytest.mark.anyio
+async def test_run_episode_limits_student_reply_tokens(monkeypatch):
+    episode = _episode()
+    captured_max_tokens = []
+
+    async def fake_chat_completion(config, messages, **kwargs):
+        captured_max_tokens.append(kwargs.get("max_tokens"))
+        return "Short unsure student reply."
+
+    monkeypatch.setattr("backend.app.services.runner.chat_completion", fake_chat_completion)
+
+    result = await run_episode(episode, Mode.context_engineered, _mock_provider())
+
+    assert result.status == "succeeded"
+    assert captured_max_tokens == [180]

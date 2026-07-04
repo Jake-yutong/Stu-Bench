@@ -4,6 +4,8 @@ from backend.app.data.schemas import EpisodeRecord, EpisodeResult, ProviderConfi
 from backend.app.services.judge_normalizer import load_judge_payload, normalize_judge_scores
 from backend.app.services.provider_adapter import ProviderError, chat_completion
 
+JUDGE_MAX_TOKENS = 500
+
 
 def build_judge_messages(episode: EpisodeRecord, result: EpisodeResult) -> list[dict[str, str]]:
     trajectory = [turn.model_dump() for turn in result.generated_trajectory]
@@ -53,7 +55,11 @@ async def judge_episode(
     if result.status == "failed":
         return result
     try:
-        text = await chat_completion(judge_provider, build_judge_messages(episode, result))
+        text = await chat_completion(
+            judge_provider,
+            build_judge_messages(episode, result),
+            max_tokens=JUDGE_MAX_TOKENS,
+        )
         scores = normalize_judge_scores(load_judge_payload(text))
         return result.model_copy(update={"judge_scores": scores})
     except (ProviderError, json.JSONDecodeError, ValueError) as exc:

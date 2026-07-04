@@ -53,7 +53,16 @@ export function ResultsPanel({
   return (
     <aside className="panel results-panel">
       <h2>{labels?.results ?? "Results"}</h2>
+      {result?.mode ? (
+        <div className="result-meta">
+          <span>{labels?.condition ?? "Condition"}</span>
+          <strong>{result.mode}</strong>
+        </div>
+      ) : null}
       <ScoreGrid scores={scores} labels={scoreLabels} />
+      {result?.status === "failed" && result.error_message ? (
+        <div className="error-text">{result.error_message}</div>
+      ) : null}
       <div className="rationale">
         {String(scores?.judge_rationale ?? labels?.rationalePlaceholder ?? "Judge rationale will appear here after a run.")}
       </div>
@@ -83,9 +92,18 @@ export function ResultsPanel({
           <div className="modal" role="dialog" aria-modal="true" aria-label={labels?.jsonExportTitle ?? "Export JSON"}>
             <div className="modal-header">
               <h3>{labels?.jsonExportTitle ?? "Export JSON"}</h3>
-              <button type="button" onClick={closeJsonExport}>
-                {labels?.close ?? "Close"}
-              </button>
+              <div className="button-row">
+                <a
+                  className="button-link"
+                  href={apiDownloadUrl(`/api/runs/${runId}/export.json`)}
+                  download={`${runId}.json`}
+                >
+                  {labels?.downloadJson ?? "Download JSON"}
+                </a>
+                <button type="button" onClick={closeJsonExport}>
+                  {labels?.close ?? "Close"}
+                </button>
+              </div>
             </div>
             <pre className="json-export">
               {isJsonLoading

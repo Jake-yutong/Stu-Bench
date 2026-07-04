@@ -6,7 +6,7 @@ export type ProviderPreset =
   | "local-vllm-sft"
   | "local-vllm-dpo"
   | "mock";
-export type TestMode = "roleplay" | "profile" | "context_engineered";
+export type TestMode = "roleplay" | "profile" | "context_engineered" | "no_kc_scs";
 export type MetricStatus = "computed" | "judge_estimated" | "pending_annotation";
 
 export interface ProviderConfig {
@@ -31,6 +31,7 @@ export interface RunStatus {
   total: number;
   completed: number;
   current_episode_id?: string | null;
+  current_mode?: TestMode | null;
   results?: EpisodeRunResult[];
   error_message?: string | null;
 }
@@ -42,6 +43,8 @@ export interface EpisodeSummary {
   source_split: "test" | "val" | "train";
   problem_preview: string;
   scaffold_turns: number;
+  annotation_method?: string;
+  human_verification_status?: string;
 }
 
 export interface MetricStatusInfo {
@@ -72,6 +75,7 @@ export interface EpisodeDetail {
     text: string;
     answer_options: Array<{ label: string; text: string }>;
   };
+  annotation_metadata?: Record<string, unknown>;
   lcs: {
     scs: Record<string, unknown>;
     scaffold_sequence: Array<{ message: string }>;
@@ -80,6 +84,7 @@ export interface EpisodeDetail {
 
 export interface EpisodeRunResult {
   episode_id: string;
+  mode: TestMode;
   status: "succeeded" | "failed";
   generated_trajectory: Array<{
     turn_index: number;

@@ -23,7 +23,8 @@ import type {
   TestMode,
 } from "../lib/types";
 
-const POLL_INTERVAL_MS = 1000;
+const POLL_INTERVAL_MS = 500;
+const allConditionModes: TestMode[] = ["roleplay", "profile", "context_engineered", "no_kc_scs"];
 
 const mockProvider: ProviderConfig = {
   preset: "mock",
@@ -32,6 +33,29 @@ const mockProvider: ProviderConfig = {
   model: "mock-student",
   temperature: 0.7,
 };
+
+function hasDisplayableOutput(result: EpisodeRunResult) {
+  return result.generated_trajectory.length > 0 || Boolean(result.judge_scores);
+}
+
+function latestDisplayableResult(results: EpisodeRunResult[] | undefined) {
+  if (!results?.length) return null;
+  for (let index = results.length - 1; index >= 0; index -= 1) {
+    if (hasDisplayableOutput(results[index])) {
+      return results[index];
+    }
+  }
+  return results[results.length - 1];
+}
+
+function latestActiveDisplayableResult(results: EpisodeRunResult[]) {
+  for (let index = results.length - 1; index >= 0; index -= 1) {
+    if (hasDisplayableOutput(results[index])) {
+      return results[index];
+    }
+  }
+  return null;
+}
 
 export function EpisodeWorkbench() {
   const [language, setLanguage] = useState<Language>("en");
@@ -42,6 +66,7 @@ export function EpisodeWorkbench() {
     model: "mock-judge",
   });
   const [mode, setMode] = useState<TestMode>("context_engineered");
+  const [runAllConditions, setRunAllConditions] = useState(false);
   const [episodes, setEpisodes] = useState<EpisodeSummary[]>([]);
   const [datasetSummary, setDatasetSummary] = useState<DatasetSummary | null>(null);
   const [selectedEpisodeIds, setSelectedEpisodeIds] = useState<string[]>([]);
@@ -92,6 +117,17 @@ export function EpisodeWorkbench() {
     );
   }
 
+  function selectAllEpisodes() {
+    setSelectedEpisodeIds(episodes.map((item) => item.episode_id));
+    if (episodes[0]) {
+      setActiveEpisodeId(episodes[0].episode_id);
+    }
+  }
+
+  function clearEpisodeSelection() {
+    setSelectedEpisodeIds([]);
+  }
+
   function changeTestCount(value: string) {
     const parsed = Number(value);
     const max = Math.max(episodes.length, 1);
@@ -113,12 +149,12 @@ export function EpisodeWorkbench() {
 
   function updateRunFromStatus(status: RunStatus) {
     setRunStatus(status);
-    if (status.results) {
+    if (status.results?.length) {
       setRun({ run_id: status.run_id, results: status.results });
     }
 
-    const latestResult = status.results?.[status.results.length - 1] ?? null;
-    const displayEpisodeId = status.current_episode_id ?? latestResult?.episode_id;
+    const displayResult = latestDisplayableResult(status.results);
+    const displayEpisodeId = displayResult?.episode_id;
     if (displayEpisodeId) {
       setActiveEpisodeId(displayEpisodeId);
     }
@@ -159,8 +195,11 @@ export function EpisodeWorkbench() {
       setRunStatus(null);
       setRunError("");
       setIsRunning(true);
+      const modePayload = runAllConditions
+        ? { modes: allConditionModes }
+        : { mode };
       const status = await apiPost<RunStatus>("/api/runs", {
-        mode,
+        ...modePayload,
         student_provider: studentProvider,
         judge_provider: judgeProvider,
         episode_ids: episodeIds,
@@ -198,11 +237,17 @@ export function EpisodeWorkbench() {
   }
 
   const runStatusText = runStatus
-    ? `${runStatus.status}: ${runStatus.completed}/${runStatus.total}`
+    ? `${runStatus.status}: ${runStatus.completed}/${runStatus.total}${
+        runStatus.current_mode ? ` (${runStatus.current_mode})` : ""
+      }`
     : t.idleStatus;
   const latestResult = run?.results?.[run.results.length - 1] ?? null;
+  const activeEpisodeResults =
+    run?.results?.filter((result) => result.episode_id === activeEpisodeId) ?? [];
+  const latestRenderableResult = latestDisplayableResult(run?.results);
+  const activeDisplayableResult = latestActiveDisplayableResult(activeEpisodeResults);
   const activeResult: EpisodeRunResult | null =
-    run?.results?.find((result) => result.episode_id === activeEpisodeId) ?? latestResult;
+    activeDisplayableResult ?? latestRenderableResult ?? latestResult;
   const statusLabel = (status: MetricStatus) =>
     ({
       computed: t.metricComputed,
@@ -270,7 +315,17 @@ export function EpisodeWorkbench() {
               <option value="roleplay">{t.roleplay}</option>
               <option value="profile">{t.profile}</option>
               <option value="context_engineered">{t.contextEngineered}</option>
+              <option value="no_kc_scs">{t.noKcScs}</option>
             </select>
+          </label>
+          <label className="checkbox-row compact-checkbox">
+            <input
+              aria-label={t.runAllConditions}
+              type="checkbox"
+              checked={runAllConditions}
+              onChange={(event) => setRunAllConditions(event.target.checked)}
+            />
+            <span>{t.runAllConditions}</span>
           </label>
           <section className="dataset-status" aria-label={t.datasetStatus}>
             <h2>{t.datasetStatus}</h2>
@@ -317,6 +372,17 @@ export function EpisodeWorkbench() {
             />
           </label>
           <div className="field-label">{t.episodeSelection}</div>
+          <div className="button-row">
+            <button type="button" onClick={selectAllEpisodes}>
+              {t.selectAllEpisodes}
+            </button>
+            <button type="button" onClick={clearEpisodeSelection}>
+              {t.clearSelection}
+            </button>
+          </div>
+          <div className="selection-summary">
+            {t.selectedEpisodes}: {runEpisodeIds().length}/{episodes.length}
+          </div>
           <div className="episode-picker" role="group" aria-label={t.episodeSelection}>
             {episodes.map((item) => (
               <label

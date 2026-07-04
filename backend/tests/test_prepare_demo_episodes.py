@@ -42,6 +42,8 @@ def test_build_episode_record_splits_scs_and_ecs():
     )
     episode = build_episode_record((10, 104614), dialogue_rows, metadata, subjects)
     assert episode.lcs.scs.visible_learner_profile
+    assert episode.annotation_metadata.method == "llm_generated"
+    assert episode.annotation_metadata.human_verification_status == "pending_human_verification"
     assert episode.lcs.ecs.real_student_trajectory[1].speaker == "student"
     assert "ground_truth_answer" not in episode.lcs.scs.model_dump()
     assert episode.lcs.scaffold_sequence[0].type == "tutor_message"

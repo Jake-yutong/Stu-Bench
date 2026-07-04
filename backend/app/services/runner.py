@@ -8,6 +8,8 @@ from backend.app.data.schemas import (
 from backend.app.services.prompt_service import build_student_messages
 from backend.app.services.provider_adapter import ProviderError, chat_completion
 
+STUDENT_REPLY_MAX_TOKENS = 180
+
 
 async def run_episode(
     episode: EpisodeRecord,
@@ -18,7 +20,11 @@ async def run_episode(
     try:
         for index, scaffold in enumerate(episode.lcs.scaffold_sequence, start=1):
             messages = build_student_messages(episode, mode, history, scaffold.message)
-            student_response = await chat_completion(student_provider, messages)
+            student_response = await chat_completion(
+                student_provider,
+                messages,
+                max_tokens=STUDENT_REPLY_MAX_TOKENS,
+            )
             history.append(
                 GeneratedTurn(
                     turn_index=index,
